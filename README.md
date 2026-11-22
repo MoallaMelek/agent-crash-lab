@@ -51,7 +51,7 @@ a plain "naive retry vs idempotency" demo was **rejected as redundant**.
 
 ## 🔬 What the matrix shows
 
-Recorded on 2026-11-22, lab commit `e9f6a8e`. Counts are FakePay rows for one order; the expected
+Recorded on 2026-11-22, lab commit `00aa855`. Counts are FakePay rows for one order; the expected
 value is one charge.
 
 | # | Finding | Cell (evidence) | Charges |
@@ -208,7 +208,7 @@ and re-ran the matrix twice with identical results. It found and fixed two label
 oracle; no verdict changed. See [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
 **Measured runtime** (2-core Linux container, `-j 4`): one matrix pass takes about 60 s;
-`--repeat 3` takes 177.5 s. These are not benchmarks of Pydantic AI.
+`--repeat 3` takes about 170 s (166.5 s in the recorded run). These are not benchmarks of Pydantic AI.
 
 ## ⚖️ Guarantees and honest limitations
 

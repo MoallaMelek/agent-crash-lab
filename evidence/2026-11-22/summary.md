@@ -1,6 +1,6 @@
 # Agent Crash Lab: matrix summary
 
-Recorded 2026-11-22T20:38:56+00:00 with pydantic-ai-slim 2.71.0, pydantic-ai-harness 0.71.0, Python 3.13.18 on Linux x86_64; lab commit e9f6a8e4882b.
+Recorded 2026-11-22T21:17:06+00:00 with pydantic-ai-slim 2.71.0, pydantic-ai-harness 0.71.0, Python 3.13.18 on Linux x86_64; lab commit 00aa8553948c.
 
 92 cells, each run 3 time(s). Verdicts: AMBIGUOUS_RESOLVED 3, DUPLICATE 35, KILL_NOT_REACHED 1, MISSING 1, NOT_APPLICABLE 4, OK 48. Expectations: met 92. Reproducible: 92/92.
 

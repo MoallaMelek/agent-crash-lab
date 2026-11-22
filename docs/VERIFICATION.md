@@ -96,5 +96,6 @@ the fixes. Expectations met: 92/92. Reproducible: 92/92.
   and without them was not compared beyond reading the dispatch code.
 - **Reconcile matches by `call_ref` metadata when no key exists.** With stable ids reused across
   orders or runs this would match the wrong charge. Only one order is tested.
-- **The committed evidence records lab commit `50d4bd7 (dirty)`**, because the fixes above are
-  not yet committed. Re-run the matrix after committing to record a clean commit.
+- **Evidence provenance.** At review time the evidence recorded a dirty tree, because the fixes
+  above were not yet committed. The published evidence was regenerated afterwards from a clean
+  commit (see the banner in `docs/evidence/latest/summary.md`), with identical verdicts and counts.
