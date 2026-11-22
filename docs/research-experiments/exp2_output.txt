@@ -1,0 +1,26 @@
+pydantic_ai 2.71.0
+
+== exception: raised RuntimeError: network died after the charge; charges during run=1
+   captured: ModelRequest(state=complete):['user-prompt']
+   captured: ModelResponse(state=complete):['tool-call']
+   captured: ModelRequest(state=interrupted):[]
+   resume(no prompt): output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'" extra charges=0
+
+== cancel: raised CancelledError: ; charges during run=1
+   captured: ModelRequest(state=complete):['user-prompt']
+   captured: ModelResponse(state=complete):['tool-call']
+   captured: ModelRequest(state=interrupted):[]
+   resume(no prompt): output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'" extra charges=0
+
+== token: raised RunCancelled: The agent run was cancelled.; charges during run=1
+   captured: ModelRequest(state=complete):['user-prompt']
+   captured: ModelResponse(state=complete):['tool-call']
+   captured: ModelRequest(state=interrupted):[]
+   resume(no prompt): output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'" extra charges=0
+
+== keyboard: raised CancelledError: ; charges during run=1
+   captured: ModelRequest(state=complete):['user-prompt']
+   captured: ModelResponse(state=complete):['tool-call']
+   captured: ModelRequest(state=interrupted):[]
+   KeyboardInterrupt escaped asyncio.run() (Python asyncio behaviour) -> process would exit 130
+   ledger charges total: 4

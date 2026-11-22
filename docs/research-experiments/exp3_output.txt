@@ -1,0 +1,13 @@
+pydantic_ai 2.71.0
+start  all_messages: []
+about to run UserPromptNode    ; charges so far=0
+   -> yielded ModelRequestNode   all_messages=[]  next.request parts=['user-prompt']
+about to run ModelRequestNode  ; charges so far=0
+   -> yielded CallToolsNode      all_messages=["ModelRequest:['user-prompt']", "ModelResponse:['tool-call']"]
+about to run CallToolsNode     ; charges so far=0
+   -> yielded ModelRequestNode   all_messages=["ModelRequest:['user-prompt']", "ModelResponse:['tool-call']"]  next.request parts=['tool-return']
+about to run ModelRequestNode  ; charges so far=1
+   -> yielded CallToolsNode      all_messages=["ModelRequest:['user-prompt']", "ModelResponse:['tool-call']", "ModelRequest:['tool-return']", "ModelResponse:['text']"]
+about to run CallToolsNode     ; charges so far=1
+   -> yielded End                all_messages=["ModelRequest:['user-prompt']", "ModelResponse:['tool-call']", "ModelRequest:['tool-return']", "ModelResponse:['text']"]
+result run_id fixed-run output done: outcome=success content='charged 500 (key=fixed-run:call-1)'

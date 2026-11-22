@@ -1,0 +1,233 @@
+=== #12301 [open] created=2026-11-02 updated=2026-11-13 by DouweM (CONTRIBUTOR) comments=4 labels=docs,size: S,pkg:core
+Going to Production: start from how a run begins and what a crash costs
+Rewrites the top of "Going to Production" around how real projects run, based on [a count of 81 public projects](https://github.com/pydantic/pydantic-ai-notes/blob/main/growth/docs-strategy/2026-11-05%20production%20shapes%20in%20real%20projects.md) that use Pydantic AI (all of Built With, plus the top dependents by stars).
+
+An earlier version of this PR listed three shapes: plain service, durable workflow, coding agent. The count didn't support that: those covered at most 36 of 81, and two of them aren't shapes. Durable cuts across shapes (5 of 81 use an engine), and coding is a domain. The largest gap was runs nobody waits for: workers and pipelines, 20 of 81.
+
+- The opening paragraphs are unchanged.
+- A new list starts from how a run begins and who is waiting: a person in your web app, nobody, or a person in a terminal.
+- A short paragraph then asks what a crash costs: starting again is fine for most agents, and a durable engine is for long runs, unrepeatable side effects and approvals that wait days.
+- The crash row of the question table now says the same, rather than sending every reader to an engine.
+- `#deploy`'s "Typical shapes:" becomes "Where it runs:". Its worker bullet leads with Celery, Dramatiq or arq and warns that a retry repeats tool side effects. A new bullet covers pipeline steps.
+
+Addresses [pydantic/pydantic.dev#1729](https://github.com/pydantic/pydantic.dev/issues/1729) and [pydantic/pydantic.dev#1723](https://github.com/pydantic/pydantic.dev/issues/1723), buyer's briefs asking for a way to choose and for a path without an engine.
+
+Not in this PR: a ru
+
+=== #11960 [open] created=2026-10-30 updated=2026-10-30 by adtyavrdhn (MEMBER) comments=2 labels=bug,size: S
+Keep a continued conversation from re-running an interrupted harness `Shell` command, and a repeated tool call ID from returning another call's output
+- Closes #11951
+- Closes #11953
+
+Both bugs come from how a `start_command` or `shell` call names its job directory. The name was `sha256(run_id:tool_call_id)`, and an existing directory is attached to rather than launched again.
+- **#11951:** a conversation continued after a crash is a new run, so it got a new name and ran the interrupted command again.
+- **#11953:** a repeated or empty tool call ID in one run got the same name, so the second call returned the first call's output.
+
+### What changes
+
+The name now stands for the call: `sha256(response:tool_call_id:command)`.
+- `response` is the `run_id` and `timestamp` that the agent stamped on the history's last `ModelResponse`, the one whose calls are running. A continued conversation keeps both, and so do DBOS replay and a JSON round trip through `ModelMessagesTypeAdapter`.
+- Inside a Temporal activity, `ctx.messages` is not carried and raises `UserError`. There, `run_id:run_step` stands in for the response. It is stable for a retried activity and differs between steps.
+- The command is in the key because core lets an ID repeat within one response, across the batches an output call splits it into. This happens under the default `end_strategy='graceful'`, and I reproduced it.
+- An empty ID needs no special case: within one response it is unique like any other ID.
+
+### Departures from the issues
+
+- **#11953 suggests storing a command fingerprint and relaunching under a fresh name on a mismatch.** That still returns stale output when the same command (say `pytest`) runs twice under a repeated ID. A random fresh name would als
+
+=== #11377 [open] created=2026-10-26 updated=2026-11-04 by DouweM (CONTRIBUTOR) comments=1 labels=docs,area:durable-exec
+DBOS docs: side-effecting tools and idempotency keys, human-in-the-loop, and nested agents
+_Posted by Claude Code on Douwe's behalf. Reported by a user running many background agents in production._
+
+### Description
+
+`docs/durable_execution/dbos.md` says function tools aren't wrapped automatically and that I/O should be decorated with `@DBOS.step` (lines 56-57). It doesn't cover what production users run into next. Temporal's page covers more of this.
+
+- [ ] **Tools with side effects.** The commit-then-crash window, and using `DBOS.workflow_id` plus `ctx.tool_call_id` as an idempotency key. The tool call id is stable across replay because the model response is a recorded step output. Today idempotency is mentioned only for event handlers (line 217). Cross-link harness `StepPersistence`'s tool-effect ledger.
+- [ ] **Human-in-the-loop.** Two patterns, with their replay caveats: end the workflow and resume in a new one from the stored conversation, or wait inside the workflow (`DBOS.recv` in a deferred-tool handler). Also cover how DBOS application versioning interacts with deploying many times a day (line 199 only notes that pre-change workflows can't recover). Temporal shows `deferred_tool_results` through an adapter (`temporal.md:480`).
+- [ ] **Delegation and nested durable agents.** Whether a delegate agent run inside a tool needs its own `DBOSDurability` and name, and how its steps nest. `temporal.md:276` covers this for Temporal. Back it with a test.
+
+
+
+=== #9165 [open] created=2026-03-26 updated=2026-11-21 by adtyavrdhn (MEMBER) comments=2 labels=feature
+Execution Checkpointing & Resume (durable agent state)
+> Parent: pydantic/pydantic-ai-harness#1 — [Tracking] Capabilities abstraction for pydantic-ai
+
+## Goal
+
+Snapshot agent state (conversation history, tool results, memory, workspace) at configurable intervals during execution, enabling rollback to any previous checkpoint and resume after crashes, restarts, or deployments.
+
+## Context
+
+- **Category:** Capability (`AbstractCapability` subclass)
+- **Serializability:** Tier P — `- Checkpoint: {interval: 5, max_checkpoints: 50, backend: sqlite}`
+- **Capability interface methods:** `after_model_request()` (auto-checkpoint) + `get_toolset()` (manual checkpoint/restore)
+- **Implementation status:** Not started
+- **Blocked by:** pydantic/pydantic-ai-harness#31 — Session persistence capability
+
+## Description
+
+### Why this is critical
+
+LangGraph's pydantic/pydantic-ai-harness#1 selling point is **durable execution** — "persist through failures, pause/resume, rollback to any point." It's the reason enterprises choose LangGraph (90M monthly downloads; Uber, JP Morgan, BlackRock use it).
+
+Without checkpointing:
+- A crash at step 47 of 50 loses all work
+- A bad tool call can't be undone without replaying from scratch
+- Deploying a new version kills in-progress sessions
+- Long-running agents (hours, days) are fragile
+
+With checkpointing:
+- Resume from the last checkpoint after any failure
+- Rollback to before a bad decision
+- Hot-deploy new code, resume existing sessions
+- Time-travel debugging (inspect state at any point)
+
+### How Hermes implements this
+
+Hermes has `checkpoint_manager.py` — git-based shadow repos for workspace state:
+
+**F
+
+=== #7247 [open] created=2026-08-06 updated=2026-09-15 by DouweM (CONTRIBUTOR) comments=3 labels=p:4-low,has-workaround
+First-class checkpoint/rewind primitive for agent runs
+### Description
+
+pydantic-deepagents implements checkpoint/rewind by raising a custom exception from inside a tool to escape `agent.run()`, then restarting the run with a truncated history. It works, but it's fighting the framework: there's no sanctioned way to say "stop the loop, roll history back to point X, and continue from there."
+
+A first-class rewind/checkpoint primitive would cover:
+- marking a checkpoint (implicitly per model-request, or explicitly);
+- requesting a rewind from inside a tool / capability hook, ending the current run cleanly (no exception tunneling through the graph);
+- resuming from the truncated history — which composes naturally with prompt caching, since a rewind to a checkpoint restores an exact previous prefix.
+
+@DEENUU1 — this came out of reading how deepagents escapes the run loop (`RewindRequested`); would love your input on the shape that would let you delete that machinery: what does the checkpoint need to capture beyond messages (deps state? usage?), and does rewind-from-tool cover your cases or do you also rewind from outside the run?
+
+Related: message-history primitives (`pydantic_ai.messages`), #6257 (StopRun direction — the "end the run cleanly from inside" half).
+
+
+=== #11757 [open] created=2026-10-28 updated=2026-11-03 by mpfaffenberger (CONTRIBUTOR) comments=2 labels=
+Simulated toolset: answer tool calls with a model, for evals and tests of agents whose tools have side effects
+## Problem
+
+Evaluating an agent end to end means letting it call its tools. For tools that send messages, charge cards, write to production systems or need credentials, that isn't an option in CI or in a `pydantic_evals` `Dataset` run. Today you can swap toolsets with `agent.override(toolsets=...)` and write a fake `FunctionToolset` by hand, but that means writing and maintaining a stub per tool and per scenario. Hand-written stubs usually return one canned value, so the agent never sees realistic variation (empty results, partial matches, errors), and multi-step flows break because the stubs don't stay consistent with each other (an order "created" in one call doesn't exist when the next call looks it up).
+
+`TestModel` and `FunctionModel` cover the model side of a test. Nothing covers the tool side when you want plausible behavior without real execution.
+
+## Proposed API / behavior
+
+A wrapper toolset that keeps the wrapped tools' definitions (names, descriptions, parameter schemas, return schemas) exactly as the agent sees them, but answers each call with a model instead of running it:
+
+```python
+from pydantic_ai.toolsets import SimulatedToolset
+
+simulated = SimulatedToolset(
+    payments_toolset,
+    model='openai:gpt-5-mini',
+    scenario='The customer has two open orders; the second card on file is expired.',
+    passthrough=['get_exchange_rate'],          # still executed for real
+    fixtures={'get_customer': {'id': 'c_1', 'name': 'Ada'}},  # fixed answers
+)
+
+with agent.override(toolsets=[simulated]):
+    result = await agent.run('Refund my last order')
+```
+
+Behavior:
+
+=== #13115 [open] created=2026-11-10 updated=2026-11-16 by DouweM (CONTRIBUTOR) comments=2 labels=feature,pkg:evals,needs-maintainer-discussion,p:3-mid,pydanty:triage-completed
+Run agents in evals with side-effecting tools blocked, recorded and replayable
+## Background
+From a depth review of five projects on the Built With page that rebuilt harness-level pieces on Pydantic AI (Agent Foundation, AgenticOS/Pydantic Deep Agents, Dify, PAI Agent SDK, Microsoft Conductor). AgenticOS's `IsolationGuard`/`ToolRecording` lets read-only tools run, blocks and records every other call, and can answer calls from a recording of an earlier run ([isolation.py](https://github.com/vstorm-co/agenticos/blob/c154be0a2a158e983fbc0a601cae2137c0bfc776/backend/app/agents/isolation.py#L168-L291)). It doesn't use pydantic-evals.
+
+## The problem
+Evaluating an agent with real tools risks real side effects; there's no built-in way to block, record or replay tool calls in pydantic-evals or the Harness.
+
+## Suggested direction (low-confidence)
+A capability (or evals helper) with a read-only allowlist, a recording sink, and a replay source keyed by tool name and arguments.
+
+
+=== #7955 [open] created=2026-08-31 updated=2026-11-18 by mpfaffenberger (CONTRIBUTOR) comments=4 labels=feature,meta,p:3-mid,pydanty:triage-completed
+Standard tool-level speculation-safety declarations (`side_effect_free`, `idempotent`, `stable_for`, resource keys)
+## Motivation
+
+`pydantic-ai-harness` is building speculative execution for `CodeMode` (pydantic/pydantic-ai-harness#699, after <https://alexzhang13.github.io/blog/2026/spec-ptc/>): tool calls inside a streamed `run_code` snippet launch while the model is still generating, and the executing snippet later claims the in-flight results. Whether a call is safe to launch early is a property of the *tool*, so the harness now supports `speculate='declared'`, which resolves eligibility from the tool definition instead of a user allowlist: `Tool(..., metadata={'side_effect_free': True})` (or `'idempotent'`) for first-party tools, and the MCP `readOnlyHint` / `idempotentHint` annotations, which already arrive under `ToolDefinition.metadata['annotations']`.
+
+That works today with zero core changes, but it is a stringly-keyed convention. This issue proposes that the vocabulary live in pydantic-ai core as a discoverable, typo-proof surface.
+
+## The properties
+
+Speculation subjects a call to four distinct hazards; each maps to one declaration:
+
+| Hazard | Declaration |
+| --- | --- |
+| Phantom execution (untaken branch, abandoned snippet) | `side_effect_free` |
+| Duplication (retry after a miss, evict then cold call) | `idempotent` |
+| Time shift past intervening writes | `reads=(...)` / `mutates=(...)` argument keys |
+| Staleness (result computed at launch, used at claim) | `stable_for=<timedelta>` |
+
+Notes: `idempotent` alone answers only duplication (an idempotent DELETE still fires on an untaken branch), so it is a modifier, not sufficient for eligibility by itself. Resource keys enabl
+
+=== #10533 [closed] created=2026-10-16 updated=2026-10-16 by DouweM (CONTRIBUTOR) comments=2 labels=docs,size: S,pkg:core
+Run the Prefect task-config example inside a flow so its retry settings apply, and stop promising exactly-once side effects
+Three accuracy fixes to the Prefect durable execution guide (`docs/durable_execution/prefect.md`), found in a review of the durable execution guides.
+
+**The task-configuration example never used its task configuration.** It called `agent.run()` from a plain `async def main()`. `PrefectDurability.in_durable_context` is `FlowRunContext.get() is not None` (`pydantic_ai_slim/pydantic_ai/durable_exec/prefect/_durability.py:121`), and outside a flow the base capability calls the normal handler directly (`durable_exec/_base.py`, `wrap_model_request`: `if not self.in_durable_context: return await handler(...)`). So the retries, backoff and timeout in the example were never applied. `main()` is now decorated with `@flow`, with a note saying the config only applies inside a flow.
+
+**The guide promised automatic idempotency and rollback.** It said Prefect makes workflows "automatically idempotent: rerunnable without duplication or inconsistency", that failed transactions roll back "to a clean state", and that cached tasks make workflows "naturally idempotent". Prefect tasks replay recorded results, but they do not transact with external services: a task interrupted after its side effect but before its result was recorded runs again. The wording now says what happens: completed tasks are replayed from the record, an interrupted one may run again, and side-effecting tools should be idempotent (for example with an idempotency key).
+
+**The cache-reuse sentence was too broad.** It said an "otherwise identical run replays recorded results". The default policy is `PrefectAgentInputs() + TASK
+
+=== #8917 [open] created=2026-09-28 updated=2026-10-13 by adtyavrdhn (MEMBER) comments=2 labels=bug,area:durable-exec
+Durable retries can create a second sandbox after a lost create reply
+Durable `ensure` runs as a retried unit with `ref=None` (`pydantic_ai_slim/pydantic_ai/durable_exec/_workspace.py:112-121`). If the provider creates the sandbox but the reply is lost, the retry builds a new backend and creates a second, paid sandbox:
+
+- Modal and Sprites name the sandbox with a per-backend `uuid4` (`src/pydantic_ai_harness/pydantic_ai_harness/modal_sandbox/_backend.py:434-435`, `src/pydantic_ai_harness/pydantic_ai_harness/sprites_sandbox/_backend.py:418`), so Modal's recovery by name only works within one backend, not across activity retries.
+- E2B names nothing, and its `_create` docstring says a lost reply cannot be recovered (`src/pydantic_ai_harness/pydantic_ai_harness/e2b_sandbox/_backend.py:459-490`).
+
+The fix is a stable per-run key from core that providers use as a name or idempotency key. Sub-issues cover core and each provider.
+
+
+=== #13781 [open] created=2026-11-17 updated=2026-11-17 by DouweM (CONTRIBUTOR) comments=0 labels=feature,area:durable-exec,pkg:core
+Carry a durable unit's side effects (state changes, usage, events) back in its recorded output
+> Written by Claude Code on behalf of @DouweM.
+
+## Problem
+
+Under durable execution, an activity's `RunContext` is a rebuilt copy: changes to it are lost, usage incurred inside it doesn't reach the parent run (#6886), and `ctx.emit()` / `ctx.enqueue()` raise inside the unit (#7971). There's no way for a tool running in an activity or step to send anything back to the workflow except its return value.
+
+## Proposal
+
+A durable unit records `(result, side_effects)`, where side effects are typed state operations, usage deltas and events. The workflow applies them in tool-call order, so replay applies the same effects in the same order from the recorded output.
+
+- **Temporal:** carried in the activity result.
+- **DBOS / Prefect:** carried in the step or task output (this also fixes the divergence between a cache hit and a fresh run).
+- **AWS Lambda durable functions:** carried in the step result.
+
+This extends #7971 (which covers events and queued messages) to state and usage, gives #6886 its transport, and is the foundation for a shared-state capability (#13782).
+
+Rough size: M. Related: #7971, #6886.
+
+---
+_One of ten issues from a design review of a durable multi-agent orchestrator (a lead agent with ~100 sub-agents, up to 40 at once, ~7,600 model requests over ~4 hours, on Temporal). We treat that shape as a use case to design for._
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+
+=== #7971 [open] created=2026-08-31 updated=2026-10-13 by DouweM (CONTRIBUTOR) comments=3 labels=
+Carry a durable unit's emitted events and enqueued messages in its recorded output
+Under durable execution, `ctx.emit()` and `ctx.enqueue()` are side effects of *running* a durable unit rather than part of its recorded result, so they don't survive replay:
+
+- **Prefect / DBOS**: `emit` works, and the event is delivered when the unit runs. On a flow retry, a cache hit, or DBOS recovery the recorded result is replayed without re-running the body, so the event is never re-emitted. Pinned by `test_prefect_task_wrapped_tool_emit_is_not_replayed`.
+- **Temporal**: `emit` from a tool or event stream handler raises, because the activity's rebuilt `RunContext` has no path back to the run's event stream at all.
+- **`ctx.enqueue()`**: rejected on all three engines by `EnqueueGuard` / `deserialize_run_context`, for the same reason — the enqueued messages would be dropped on replay, and unlike a missed event that changes what the model sees.
+
+The consequence that matters: a capability cannot emit from its own tools under durable execution. `FileSystem` emitting a `FileReadEvent` from its read tool — the pattern `RepoContext` subscribes to — is lossy on Prefect/DBOS and a hard `UserError` on Temporal.
+
+## Proposal
+
+Carry a durable unit's emitted events and enqueued messages back in its **recorded output**, and replay them container-side (workflow / flow / workflow code) when the unit's result is replayed.
+
+`DurableOperation` already has the shape for this: one `handler`, one `result_codec`, and a small number of declaration sites in `durable_exec/_base.py`. Sketch:
+
+1. Worker-side, install capture sinks on the unit's `RunContext` — replacing `EnqueueGuard` and the live 
+

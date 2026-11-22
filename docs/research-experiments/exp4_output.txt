@@ -1,0 +1,180 @@
+retry_model=0 naive_iter  kill@before_effect   tool=naive resume_default     killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@before_effect   tool=idem  resume_default     killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@before_effect   tool=naive resume_reconcile   killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@after_effect    tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 naive_iter  kill@after_effect    tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@after_effect    tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 naive_iter  kill@after_tool_node tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 naive_iter  kill@after_tool_node tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@after_tool_node tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 naive_iter  kill@next_model_request tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 naive_iter  kill@next_model_request tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 naive_iter  kill@next_model_request tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 folded_iter kill@before_effect   tool=naive resume_default     killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@before_effect   tool=idem  resume_default     killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@before_effect   tool=naive resume_reconcile   killed=True  charges kill/final=0/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@after_effect    tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 folded_iter kill@after_effect    tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@after_effect    tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 folded_iter kill@after_tool_node tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 folded_iter kill@after_tool_node tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@after_tool_node tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 folded_iter kill@next_model_request tool=naive resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@next_model_request tool=idem  resume_default     killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 folded_iter kill@next_model_request tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1
+retry_model=0 step        kill@before_effect   tool=naive resume_default     killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_1
+retry_model=0 step        kill@before_effect   tool=naive resume_interrupted killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_1
+retry_model=0 step        kill@before_effect   tool=idem  resume_interrupted killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_1
+retry_model=0 step        kill@before_effect   tool=naive resume_reconcile   killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_1
+retry_model=0 step        kill@after_effect    tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_2
+retry_model=0 step        kill@after_effect    tool=naive resume_interrupted killed=True  charges kill/final=1/2 -> DUPLICATE
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_2
+retry_model=0 step        kill@after_effect    tool=idem  resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_1
+retry_model=0 step        kill@after_effect    tool=naive resume_reconcile   killed=True  charges kill/final=1/2 -> DUPLICATE
+         UNRESOLVED [('call-1', 'started')]
+         LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+         RESTARTED done: success: charged ch_2
+retry_model=0 step        kill@next_model_request tool=naive resume_default     killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step        kill@next_model_request tool=naive resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step        kill@next_model_request tool=idem  resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step        kill@next_model_request tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@before_effect   tool=naive resume_default     killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@before_effect   tool=naive resume_interrupted killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@before_effect   tool=idem  resume_interrupted killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@before_effect   tool=naive resume_reconcile   killed=True  charges kill/final=0/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@after_effect    tool=naive resume_default     killed=True  charges kill/final=1/2 -> DUPLICATE
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 step_frontier kill@after_effect    tool=naive resume_interrupted killed=True  charges kill/final=1/2 -> DUPLICATE
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_2
+retry_model=0 step_frontier kill@after_effect    tool=idem  resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@after_effect    tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED [('call-1', 'started')]
+         HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+         RECONCILED {'call-1': 'charged ch_1 (reconciled)'}
+         OUTPUT done: success: charged ch_1 (reconciled)
+retry_model=0 step_frontier kill@next_model_request tool=naive resume_default     killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@next_model_request tool=naive resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@next_model_request tool=idem  resume_interrupted killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         OUTPUT done: success: charged ch_1
+retry_model=0 step_frontier kill@next_model_request tool=naive resume_reconcile   killed=True  charges kill/final=1/1 -> OK
+         UNRESOLVED []
+         HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+         RECONCILED {}
+         OUTPUT done: success: charged ch_1

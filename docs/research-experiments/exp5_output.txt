@@ -1,0 +1,5 @@
+pydantic_ai 2.71.0
+first run raised: ConnectionError('connection reset after provider accepted the charge')
+tail: [('ModelResponse', 'complete'), ('ModelRequest', 'interrupted')]
+resume output: done (charged for call-2)
+effects (tool_call_ids that executed): ['call-1', 'call-2'] -> duplicate

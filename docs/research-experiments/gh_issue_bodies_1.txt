@@ -1,0 +1,152 @@
+=== #10926 [open] 2026-10-21 by salahmakboul (NONE) comments=11 labels=feature,question,p:3-mid,pkg:core,pydanty:triage-completed
+Approved tool runs again if the process dies after it executed but before the history was saved
+### Question
+
+Hi, and thanks for pydantic-ai.
+
+I'm measuring what happens when a human-approved tool call is interrupted by a crash, and I'd like to check whether I'm resuming the intended way.
+
+**Steps** (a fake `FunctionModel`, no network):
+
+1. `agent.run_sync("pay alice 10")` returns `DeferredToolRequests` for `pay(amount=10, to="alice")`, a tool with `requires_approval=True`. I store `result.all_messages()`, as an app would while it waits for the human.
+2. The human approves. I call `agent.run_sync(message_history=stored, deferred_tool_results=DeferredToolResults(approvals={"c1": True}))`. The tool runs (the payment is made), and then the process dies before the new history is stored.
+3. A new process resumes with the same stored history and the same approval, because that is all it has.
+
+**Observed:** the tool runs again, so 2 payments (3 of 3 runs).
+
+**Question:** is this the intended at-least-once behaviour? I'm not sure it's a bug: with the information pydantic-ai has, running it again may be the only option. If it is intended, would a short note in the deferred tools / human-in-the-loop docs be welcome? For example: "an approved tool can run more than once if the process stops before you store the new messages; make the tool idempotent or check the outside system first". I'm happy to send a docs PR.
+
+**Minimal reproduction** (44 lines; `python repro.py` prints `payments: 2`):
+
+```python
+"""Approved tool runs again after a crash between execution and storing the history.
+python repro.py   -> prints the number of payments (observed: 2)"""
+import os, subprocess, sys, tempfile
+from pathlib import Path
+
+from pydantic_ai import Agent, DeferredToolRequests, DeferredToolResults
+from pydantic_ai.messages import ModelMessagesTypeAdapter, ModelResponse, TextPart, ToolCallPart
+from pydantic_ai.models.function import FunctionModel
+
+WORK = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(tempfile.mkdtemp())
+
+
+def model(messages, info):
+    if any(getattr(p, "part_kind", "") == "tool-return" for p in messages[-1].parts):
+        return ModelResponse(parts=[TextPart("done")])
+    return ModelResponse(parts=[ToolCallPart("pay", {"amount": 10, "to": "alice"}, tool_call_i
+
+=== #11951 [open] 2026-10-30 by adtyavrdhn (MEMBER) comments=2 labels=
+Harness Shell: continuing a conversation after a crash runs the interrupted command again
+### Summary
+
+If the process running an agent dies while a harness `Shell` command is running, and the conversation is then continued from its saved history, the command runs a second time.
+
+The first run of the command does not die with the agent process. It keeps running in the workspace and finishes, so the resumed conversation does the same thing twice. For `git push`, `gh pr create` or a migration, that is a real problem.
+
+### Steps
+
+1. Run an agent with `DockerSandbox` (or `E2BSandbox`) and `Shell(tools=['shell'])`. The model calls `shell` with
+   `echo "started $(date +%T)" >> /workspace/count; sleep 12; echo "finished $(date +%T)" >> /workspace/count`.
+   Save `run.all_messages()` after every step of `agent.iter`.
+2. Kill the process with `SIGKILL` while the command runs.
+3. In a new process, load the saved history and call `agent.run(message_history=history, workspace=ref)`.
+
+### What happens
+
+```
+before resume: ['started 09:39:04', 'finished 09:39:16']
+after resume:  ['started 09:39:04', 'finished 09:39:16', 'started 09:39:19', 'finished 09:39:31']
+```
+
+The same happens on E2B.
+
+### Why
+
+`shell` and `start_command` name each job `sha256(f'{ctx.run_id}:{ctx.tool_call_id}')` (`shell/_toolset.py`, `_job_id`). The exclusive claim on that name is meant to stop a second launch of the same call. A resumed conversation is a new run with a new `run_id`, so the name changes and the command launches again.
+
+Passing the old `run_id` does not help, because core refuses a `run_id` that already appears in `message_history`. Durable execution replays the `run_id`, so with DBOS `shell` ran once (`['started 10:25:37', 'finished 10:25:49']`, workflow `SUCCESS` after recovery).
+
+### Suggested fix
+
+Use the `run_id` of the `ModelResponse` that contains the tool call (found in `ctx.messages` by `tool_call_id`), and fall back to `ctx.run_id`. With that change, the resumed run attaches to the job that is already there and returns its result, and the command does not run again:
+
+```
+before resume: ['started 09:40:05', 'finished 09:40:17']
+after resume:  ['started 09:40:05', 'finished 09:40:17']
+```
+
+### Related, not fixed by this
+
+- `run_command` has no claim at all, so it re-ru
+
+=== #7176 [open] 2026-08-05 by dsfaccini (CONTRIBUTOR) comments=5 labels=
+Capability hooks that touch external state cannot commit exactly once under durable execution
+This issue was posted by Claude Code using claude-opus-5 on behalf of David.
+
+Review level: researched and verified by a Claude Code session against pydantic-ai 2.22.0 and temporalio 1.27.1. David directed the work and approved filing; he has not re-checked every claim line by line.
+
+# Capability hooks that touch external state cannot commit exactly once under durable execution
+
+Capability hooks run in orchestration code on every durability engine, and orchestration code is
+re-executed: replayed under Temporal, re-run on recovery under DBOS, re-run on flow retry under
+Prefect. A capability whose hook writes to an external store therefore commits that write more than
+once per model request, and there is no public API it can use to avoid it.
+
+## Where the boundary actually sits
+
+All three engines work the same way: the durability capability's `wrap_model_request` swaps
+`request_context.model` for a `DurableModel` and calls `handler(request_context)`. The durable
+dispatch happens inside `DurableModel.request` / `.request_stream`, which is *below* the whole
+capability chain.
+
+- `durable_exec/temporal/_durability.py` -- `TemporalDurability.wrap_model_request`
+- `durable_exec/dbos/_durability.py` -- `DBOSDurability.wrap_model_request`
+- `durable_exec/prefect/_durability.py` -- `PrefectDurability.wrap_model_request`
+- `durable_exec/_utils.py` -- `DurableModel.request`
+
+Ordering does not help. A capability listed after the durability capability in the `innermost` tier
+nests inside its wrapper, but its body still runs on the calling side of the dispatch.
+
+Exactly one `AbstractCapability` hook runs inside a durable unit today: `resolve_model_id`, invoked
+from `BaseDurabilityCapability._resolve_model_for_request` inside `request_activity` /
+`_durable_model_scope`. Everything else -- `before_model_request`, `wrap_model_request`,
+`after_model_request`, the tool hooks, the output hooks -- runs outside.
+
+## The motivating consumer
+
+`SpendLimits` in `pydantic-ai-harness` accrues spend and token counters to a shared store from
+`wrap_model_request`, so a budget holds across the workers of a queue. Under durable execution one
+billed model request can accrue two or more times, so t
+
+=== #12397 [open] 2026-11-03 by DouweM (CONTRIBUTOR) comments=3 labels=bug,p:3-mid,pkg:core,pydanty:failed
+Framework-written history content is unmarked: interrupted calls sent as successful results, placeholder turns, and silently dropped native tool results
+_Posted by Claude Code on Douwe's behalf._
+
+### Background
+
+Found while mapping where each piece of request text ends up on the wire (2026-11-03), on `main`. These are places where the framework writes or removes request content on its own, without the model or a history reader being able to tell.
+
+### Problem
+
+1. **Interrupted tool calls look like results.** `_repair_dangling_tool_calls` (`messages.py`) answers a dangling call with `outcome='interrupted'` and the content "The tool call was interrupted before a result was produced.", sent as an ordinary result (`ERROR_OUTCOMES` is `('failed', 'retried')`). A tool can return the same text, and the model can read it as the tool's output. `_drop_orphaned_tool_results` drops a result whose call was evicted, with no trace.
+2. **Placeholder turns are credited to the user or the model.** Adapters insert fixed turns to satisfy provider ordering rules:
+   - Mistral: an `assistant: "OK"` between a tool message and a user message (`models/mistral.py`), so the model is credited with acknowledging the result;
+   - Bedrock: an `assistant: "."` between a `toolResult` and user text on Llama 4 and Mistral, a leading `user: "."` on models without `bedrock_supports_leading_assistant_message`, and the user text "See attached document(s)." for a document-only turn (`models/bedrock.py`);
+   - Gemini: a leading `user: ""` when the history starts with a model turn (`models/google.py`).
+
+   None of these is marked in the history, so UI adapters and history readers can't tell them from real turns.
+3. **Another provider's native tool results are dropped.** A `NativeToolCallPart`/`NativeToolReturnPart` (Anthropic web search, OpenAI code interpreter) replayed to a different provider is dropped (each adapter only sends parts whose `provider_name` matches). The assistant text built on those results stays, now without its evidence. OpenAI code-interpreter parts without provider ids are dropped even on OpenAI.
+
+### Suggested direction (low confidence)
+
+- Send `outcome='interrupted'` through the provider's error flag where there is one (Anthropic `is_error`, Bedrock `status: error`). `ERROR_OUTCOMES`'s docstring says interrupted results are deli
+
+=== #814 [closed] 2026-09-07 by sam1siam (NONE) comments=1 labels=enhancement,question,new-capability,durable-exec,pydanty:feature,p:4-low
+Closed invitation: Agentic action-recovery integration
+This invitation is withdrawn. The enrollment program is closed, and no maintainer action or integration is requested.
+
+Agentic specifications and developer tools are available for direct use at https://ruagentic.org/adopt/. This discussion does not establish adoption or endorsement by this project.
+
+This status replaces the earlier invitation text; existing discussion remains for context.
+

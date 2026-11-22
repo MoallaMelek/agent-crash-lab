@@ -1,0 +1,91 @@
+pydantic_ai 2.71.0
+                 pydantic-ai v2.71.0 • pydantic-ai-harness v0.71.0 • Python 3.13.18
+
+      / \        agent: payer • model: function:function:scripted_model: • tools: 1
+     /   \         capabilities: 0
+   /___.___\
+  /    |    \    observability: off — see every model and tool call live, with cost
+/      |      \    set it up free with Pydantic Logfire: uvx logfire-cli wizard --task pydantic-ai
+`---.._|_..---'    or use any OpenTelemetry backend: https://pydantic.dev/docs/ai/logfire/#otel
+
+                 goes away once observability is on — or PYDANTIC_AI_NO_BANNER=1
+
+== A baseline
+   OK output="done: outcome=success content='charged 500 (key=01a204b7-d32a-70d9-ac6e-c3767f75ba13:call-1)'"
+   new charges=1  model calls=2
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+== B dangling ToolCallPart, no prompt
+   OK output="done: outcome=success content='charged 500 (key=01a204b7-d37b-71dc-b6f5-e6866f8333ef:call-1)'"
+   new charges=1  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+== C dangling ToolCallPart, new prompt
+   RAISED UserError: Cannot provide a new user prompt when the message history contains unprocessed tool calls. Run the agent with this message history and no new prompt to execute the calls, pass `deferred_tool_results` if they were deferred, or call `pydantic_ai.messages.repair_messages()` on the history first to close them out.
+   new charges=0  model calls=0
+
+== D repair_messages() then new prompt
+   OK output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'"
+   new charges=0  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[interrupted,synth]']
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['text']
+
+== E trailing ModelRequest(state=interrupted), no prompt
+   OK output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'"
+   new charges=0  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[interrupted,synth]']
+      ModelResponse(state=complete):['text']
+
+== F ModelResponse(state=interrupted), no prompt
+   OK output="done: outcome=success content='charged 500 (key=01a204b7-d38b-7079-a8de-cbb3d3fa21fb:call-1)'"
+   new charges=1  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=interrupted):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+== G ModelResponse(state=interrupted), new prompt
+   OK output="done: outcome=interrupted content='The tool call was interrupted before a result was produced.'"
+   new charges=0  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=interrupted):['tool-call']
+      ModelRequest(state=complete):['tool-return[interrupted,synth]']
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['text']
+
+== H conversation= with dangling call, no prompt
+   OK output="done: outcome=success content='charged 500 (key=01a204b7-d3b6-7486-8689-9905f663e1c4:call-1)'"
+   new charges=1  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+== I deferred_tool_results for the dangling call (supply result externally)
+   OK output="done: outcome=success content='reconciled: already charged'"
+   new charges=0  model calls=1
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+== J full completed history, no prompt (re-run of a finished run)
+   OK output="done: outcome=success content='charged 500 (key=01a204b7-d32a-70d9-ac6e-c3767f75ba13:call-1)'"
+   new charges=0  model calls=0
+      ModelRequest(state=complete):['user-prompt']
+      ModelResponse(state=complete):['tool-call']
+      ModelRequest(state=complete):['tool-return[success]']
+      ModelResponse(state=complete):['text']
+
+TOTAL charges in ledger: 4

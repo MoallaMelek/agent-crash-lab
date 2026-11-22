@@ -1,0 +1,758 @@
+[
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "before_effect",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_effect",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_tool_node",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_tool_node",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "after_tool_node",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "next_model_request",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "naive_iter",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "before_effect",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_effect",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_tool_node",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_tool_node",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "after_tool_node",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "next_model_request",
+  "tool": "idem",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "folded_iter",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "before_effect",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "after_effect",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "LOOKUP_ERROR no continuable snapshot for run_id 'run-1'",
+   "RESTARTED done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "next_model_request",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "before_effect",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "before_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 0,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 2,
+  "verdict": "DUPLICATE",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_2"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "after_effect",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "after_effect",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED [('call-1', 'started')]",
+   "HISTORY_TAIL [\"ModelRequest(complete):['user-prompt']\", \"ModelResponse(complete):['tool-call']\"]",
+   "RECONCILED {'call-1': 'charged ch_1 (reconciled)'}",
+   "OUTPUT done: success: charged ch_1 (reconciled)"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_default",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "next_model_request",
+  "tool": "idem",
+  "resume": "resume_interrupted",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ },
+ {
+  "retry": "0",
+  "persistence": "step_frontier",
+  "kill_at": "next_model_request",
+  "tool": "naive",
+  "resume": "resume_reconcile",
+  "killed": true,
+  "charges_at_kill": 1,
+  "charges_final": 1,
+  "verdict": "OK",
+  "resume_log": [
+   "UNRESOLVED []",
+   "HISTORY_TAIL [\"ModelResponse(complete):['tool-call']\", \"ModelRequest(complete):['tool-return']\"]",
+   "RECONCILED {}",
+   "OUTPUT done: success: charged ch_1"
+  ]
+ }
+]

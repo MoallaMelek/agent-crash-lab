@@ -1,0 +1,414 @@
+### pydantic-ai: idempotency
+  [issue] total=34
+  #11377	open	2026-10-26	DBOS docs: side-effecting tools and idempotency keys, human-in-the-loop, and nested agents
+  #10926	open	2026-10-21	Approved tool runs again if the process dies after it executed but before the history was saved
+  #11757	open	2026-10-28	Simulated toolset: answer tool calls with a model, for evals and tests of agents whose tools have side effects
+  #13783	open	2026-11-17	`SpendLimits`: a budget window for the whole agent tree, and reservations before a request
+  #11378	open	2026-10-26	Pattern guides: "extract, decide, write" and shared typed state across delegated agents
+  #11847	open	2026-10-29	Proposal: a persistent decision inbox for deferred tool approvals
+  #8917	open	2026-09-28	Durable retries can create a second sandbox after a lost create reply
+  #9222	open	2026-08-01	`MongoStepStore` add `purge_conversation_steps`
+  #9262	open	2026-09-02	RetryPolicy capability: configurable retry with exponential backoff for tool calls and model requests
+  #9259	open	2026-08-31	Add a Telegram channels integration
+  #5536	open	2026-05-20	HITL approval signal is a plain bool — hardening proposal (narrow vs proper fix)
+  #7176	open	2026-08-05	Capability hooks that touch external state cannot commit exactly once under durable execution
+  [pull-request] total=50
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #12952	open	2026-11-09	Document the extract-decide-write and shared typed state multi-agent patterns
+  #10599	open	2026-10-19	Add `RedisStepStore`, a Redis backend for step persistence
+  #8569	open	2026-09-21	Add a task-led Pydantic AI cookbook
+  #10215	closed	2026-10-13	Store each step-persistence message once and reference it from snapshots, deprecating `deduplicate_messages=False`
+  #9063	open	2026-09-29	Add native `RestateDurability` durable execution
+  #9982	closed	2026-10-08	Store each message once in `SqliteStepStore` instead of repeating the history in every snapshot
+  #10533	closed	2026-10-16	Run the Prefect task-config example inside a flow so its retry settings apply, and stop promising exactly-once side effects
+  #10851	closed	2026-10-20	Keep host paths and the namespace out of failed `write_memory` and `delete_memory` messages
+  #13491	closed	2026-11-14	Document that a retrying transport re-sends the `batch_create` request, and how to send it once
+  #9510	closed	2026-09-30	Stop `ConversationSearch` reloading every run's snapshots on each query
+  #8619	closed	2026-09-22	Mount filesystems into command workspaces
+### pydantic-ai: idempotent
+  [issue] total=52
+  #7955	open	2026-08-31	Standard tool-level speculation-safety declarations (`side_effect_free`, `idempotent`, `stable_for`, resource keys)
+  #13782	open	2026-11-17	A `SharedState` capability for application state that concurrent durable agents read and write
+  #11847	open	2026-10-29	Proposal: a persistent decision inbox for deferred tool approvals
+  #6703	open	2026-07-24	Realtime: outbound sends bypass `ReconnectPolicy` (OpenAI and Gemini)
+  #4679	open	2026-03-16	Agentic two-phase commits for deterministic rollbacks
+  #4580	open	2026-03-07	Feature request: Structured inter-agent message passing for multi-agent workflows
+  #13456	open	2026-11-14	`MCPToolset` keeps using a session the server dropped (HTTP 404) and turns every later call into `ModelRetry('Session terminated')`
+  #7150	open	2026-08-04	Provider-reported billed cost has a reserved home in `RequestUsage.cost` that no adapter populates
+  #6973	open	2026-07-30	`Instrumentation` prepares each model request twice, doubling JSON schema transform work
+  #10926	open	2026-10-21	Approved tool runs again if the process dies after it executed but before the history was saved
+  #7176	open	2026-08-05	Capability hooks that touch external state cannot commit exactly once under durable execution
+  #9189	open	2026-06-11	StepStore: optional SQLAlchemy backend for bring-your-own RDBMS
+  [pull-request] total=115
+  #6344	open	2026-07-08	feat(tools): behavior annotations (`read_only`/`destructive`/`idempotent`/`open_world`) on `ToolDefinition`
+  #12301	open	2026-11-02	Going to Production: start from how a run begins and what a crash costs
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #9063	open	2026-09-29	Add native `RestateDurability` durable execution
+  #6755	open	2026-07-27	feat(mcp): Add stateless mode for deferred MCP initialization
+  #12227	open	2026-11-02	Add `AgentCoreSandbox`: a workspace that runs `Coder`, `Shell`, `FileSystem` and every other harness capability in an Amazon Bedrock AgentCore Code Interpreter session
+  #8569	open	2026-09-21	Add a task-led Pydantic AI cookbook
+  #10533	closed	2026-10-16	Run the Prefect task-config example inside a flow so its retry settings apply, and stop promising exactly-once side effects
+  #9636	closed	2026-10-02	Add the RetryPolicy capability for tool-call retries with exponential backoff
+  #14012	closed	2026-11-19	Drop pre-compaction history from durable model payloads once a `CompactionPart` boundary is honored
+  #11350	closed	2026-10-26	Free closed `clai2 --web` live sessions instead of keeping them in `SessionNamer.listeners` and `TaskRouter.views`
+  #9637	closed	2026-10-02	Add the RetryPolicy capability for tool-call retries with exponential backoff
+### pydantic-ai: "exactly once"
+  [issue] total=47
+  #7176	open	2026-08-05	Capability hooks that touch external state cannot commit exactly once under durable execution
+  #13923	open	2026-11-18	[P2] Send static instructions as leading input messages by default on GPT-6.2, where top-level `instructions` are never cached
+  #7746	open	2026-08-24	Clarify concurrent `AgentStream` consumer semantics
+  #7730	open	2026-08-24	Add regression coverage for `Agent.iter` cleanup when a tool raises
+  #11847	open	2026-10-29	Proposal: a persistent decision inbox for deferred tool approvals
+  #13200	open	2026-11-11	Add a DBOS `ExternalEventWaiter` so `RequestInput` and `AskUser` wait durably inside a workflow
+  #13199	open	2026-11-11	Add a Temporal `ExternalEventWaiter` so `RequestInput` and `AskUser` wait durably inside a workflow
+  #12722	open	2026-11-06	Copying before-hook messages can duplicate history or lose later history writes
+  #12360	open	2026-11-03	`repair_messages()` leaves a tool call unanswered when its result arrives after a later response
+  #12975	open	2026-11-09	Support `AwaitApproval` and external-event waits on every durable engine, not just AWS Lambda
+  #10311	open	2026-10-15	Support image input on `TypeSafeModel` (Jev)
+  #7339	open	2026-08-10	V3: simplify capability composition and lifecycle dispatch
+  [pull-request] total=116
+  #10533	closed	2026-10-16	Run the Prefect task-config example inside a flow so its retry settings apply, and stop promising exactly-once side effects
+  #10368	closed	2026-10-15	Fix Bedrock stream first-event errors escaping FallbackModel
+  #12901	closed	2026-11-09	Fix run_stream revalidating None outputs
+  #7570	open	2026-08-18	Support deferred capability tools in realtime sessions via mid-session `session.update` tool reveals
+  #11458	closed	2026-10-26	Count a `ModelRetry` raised after a `BackgroundTools` tool's step has ended toward `max_retries`
+  #13211	open	2026-11-11	Keep every message a run adds in `result.conversation` when a capability trims the history mid-run
+  #12742	closed	2026-11-06	Show the `clai2` web page whose About asked for an install how it ended
+  #11090	closed	2026-10-22	Cancel a suspended background job only once when a streamed continuation request fails
+  #11350	closed	2026-10-26	Free closed `clai2 --web` live sessions instead of keeping them in `SessionNamer.listeners` and `TaskRouter.views`
+  #6755	open	2026-07-27	feat(mcp): Add stateless mode for deferred MCP initialization
+  #11271	closed	2026-10-26	Propagate lifecycle hooks to toolsets returned by `DynamicToolset`
+  #11671	closed	2026-10-27	Add peer messaging with `Peers` in `pydantic-ai-harness`
+### pydantic-ai: duplicate tool call
+  [issue] total=319
+  #12845	open	2026-11-08	A retried tool call with an empty `tool_call_id` is answered under a generated id, leaving the call unanswered
+  #13547	open	2026-11-15	[P2] `ConversationStore.save` stores a server tool return twice after continuing a mixed server + external tool call
+  #8250	open	2026-09-10	Groq, Mistral, and Hugging Face streaming merges text after a tool call into the pre-tool-call TextPart
+  #11120	open	2026-10-23	A `tool_call_id` repeated within one response reaches the provider repeated, and six providers reject it
+  #11757	open	2026-10-28	Simulated toolset: answer tool calls with a model, for evals and tests of agents whose tools have side effects
+  #11180	open	2026-10-23	`repair_messages` keeps a tool result for a call an earlier request already answered
+  #11846	open	2026-10-29	Gracefully wrap up when request or tool-call limits are reached
+  #11847	open	2026-10-29	Proposal: a persistent decision inbox for deferred tool approvals
+  #12242	open	2026-11-02	[P2] `ClearToolResults` and `DeduplicateFileReads` blank a kept result when a later turn reuses its `tool_call_id`
+  #11260	open	2026-10-25	Feature request: let compaction.pin keep a tool call together with its result
+  #12307	open	2026-11-03	SummarizingCompaction: a summarizer that emits a tool call fails with Tool 'x' exceeded max retries count of 1 and kills the parent run
+  #7343	open	2026-08-10	Centralize deferred tool-result settlement in ToolManager
+  [pull-request] total=1016
+  #8210	open	2026-09-08	Improve CLI tool-call previews and spacing, and add `--no-tool-calls`
+  #12665	open	2026-11-06	Stream Z.AI tool-call arguments via `tool_stream` on supported GLM models
+  #13152	open	2026-11-11	Trace the real execution of a `BackgroundTools` call
+  #13893	open	2026-11-18	Match DBOS child workflows to their tool calls by a stable ID on recovery
+  #12243	open	2026-11-02	Select compaction tool results by part position so a reused `tool_call_id` can't blank a kept result
+  #11039	open	2026-10-22	Anthropic: send the `computer` tool as each Claude model's computer use tool
+  #14051	open	2026-11-19	Use Pax branding and expose Pax documentation tools
+  #11038	open	2026-10-22	OpenAI: send the `computer` tool as OpenAI's native computer tool on GPT-5.4 and later
+  #12408	open	2026-11-04	Let `ClearToolResults` target specific `tools`, keep whole user turns with `keep_turns`, and take a callable `placeholder`
+  #13151	open	2026-11-11	Show in traces when `ToolOutputLimits` shortens a tool result
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #14043	open	2026-11-19	Record images and other media in tool results as GenAI `blob`/`uri`/`file` message parts in spans
+### pydantic-ai: crash
+  [issue] total=228
+  #13939	open	2026-11-18	Chat example crashes when a JSON record is split across network reads
+  #14121	open	2026-11-21	[P2] Follow-up to #13952: remaining json.loads() fallback sites crash on oversized integers (ValueError) or deeply nested JSON (RecursionError)
+  #12149	open	2026-11-01	[P2] AnthropicModel crashes with AssertionError on a server-side fallback `fallback` content block
+  #11951	open	2026-10-30	Harness Shell: continuing a conversation after a crash runs the interrupted command again
+  #12884	open	2026-11-08	Unknown provider response items: run() drops or crashes where run_stream() warns (OpenAI Responses, Gemini)
+  #8058	open	2026-09-03	`FunctionToolset.get_tools()` crashes if prepare registers another tool
+  #12123	open	2026-10-31	clai REPL crashes on unknown slash commands or error text that looks like Rich markup
+  #12530	open	2026-11-04	[P2] Concurrent first requests through the default `httpx2` client can crash the process in `truststore` (SIGABRT)
+  #12185	open	2026-11-02	[P2] `ModelSettings.extra_body` is typed `object`: non-mappings type-check, and `None` crashes four OpenAI-derived models
+  #2985	open	2025-09-23	opentelemetry dependency of pydantic-ai makes AWS lambda crash at import time
+  #10926	open	2026-10-21	Approved tool runs again if the process dies after it executed but before the history was saved
+  #12539	open	2026-11-04	`CodeMode` under DBOS: a recovered workflow can succeed with wrong results (nondeterminism error swallowed, time limit not durable)
+  [pull-request] total=494
+  #14101	open	2026-11-20	Fix `format_as_xml` crash on `RootModel` with scalar or list root
+  #12301	open	2026-11-02	Going to Production: start from how a run begins and what a crash costs
+  #13880	open	2026-11-18	Require `truststore>=0.10.5` so concurrent first requests through the default `httpx2` client no longer crash
+  #13527	open	2026-11-15	Fail a `CodeMode` run when a DBOS replay diverges inside `run_code`, and drop the elapsed-time limit under every durable engine
+  #13893	open	2026-11-18	Match DBOS child workflows to their tool calls by a stable ID on recovery
+  #13367	open	2026-11-13	Drop non-dict `provider_details` sent by a client to the Vercel AI and AG-UI adapters
+  #12952	open	2026-11-09	Document the extract-decide-write and shared typed state multi-agent patterns
+  #13154	open	2026-11-11	Record why `CodeMode` and `DynamicWorkflow` calls fail in traces
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #9063	open	2026-09-29	Add native `RestateDurability` durable execution
+  #8198	open	2026-09-08	docs: warn against registering tools from inside `prepare`
+  #12124	closed	2026-10-31	Fix clai REPL crash on text that looks like Rich markup
+### pydantic-ai: checkpoint
+  [issue] total=102
+  #9165	open	2026-03-26	Execution Checkpointing & Resume (durable agent state)
+  #13535	open	2026-11-15	`MessagesBuilder.last_modified()` returns the earliest matching message instead of the most recent
+  #7247	open	2026-08-06	First-class checkpoint/rewind primitive for agent runs
+  #12594	open	2026-11-05	BatchModelRequests status-check throttle skips checks on Windows for sub-15ms poll intervals
+  #12154	open	2026-11-01	HuggingFaceModel with the default provider raises UserError after every successful response
+  #14135	open	2026-11-21	SystemReminders puts a system-role message mid-conversation, which strict OpenAI-compatible backends reject with 400
+  #14107	open	2026-11-20	OpenAIChatModel streaming sums Gemini's cumulative per-chunk usage: 222 input tokens reported for 74
+  #12388	open	2026-11-03	Claude Haiku 5.5 follows a user-typed copy of the sealed `<system>` block on resumed or truncated histories
+  #12149	open	2026-11-01	[P2] AnthropicModel crashes with AssertionError on a server-side fallback `fallback` content block
+  #12065	open	2026-10-31	Hybrid-thinking models: make the thinking on/off switch a per-gateway setting, and keep family profiles to "hybrid" or "always on"
+  #12397	open	2026-11-03	Framework-written history content is unmarked: interrupted calls sent as successful results, placeholder turns, and silently dropped native tool results
+  #12672	open	2026-11-06	StepPersistence leaves a tool call skipped with `SkipToolExecution` at `started`
+  [pull-request] total=131
+  #13162	open	2026-11-11	Configure `clai2` input bindings, queue delivery, and non-modal questions
+  #10820	open	2026-10-20	Run Absurd steps without a claim heartbeat when the worker's `claim_timeout` is 0
+  #10732	open	2026-10-20	Keep `AbsurdDurability` transparent outside a task, extend the claim during steps, and stop re-running tools whose results cannot be stored
+  #10737	open	2026-10-20	Document the per-run MCP session, retries, and claim failures in `AbsurdDurability`, and test tracing on replay
+  #13527	open	2026-11-15	Fail a `CodeMode` run when a DBOS replay diverges inside `run_code`, and drop the elapsed-time limit under every durable engine
+  #9550	open	2026-10-01	Use `anyio.Event` for core stream and realtime signals
+  #6956	open	2026-07-30	Document how custom toolsets behave under durable execution
+  #6344	open	2026-07-08	feat(tools): behavior annotations (`read_only`/`destructive`/`idempotent`/`open_world`) on `ToolDefinition`
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #12414	closed	2026-11-04	Checkpoint `TrajectoryJudge` evaluations as a durable operation when the judge has an `id`
+  #13549	closed	2026-11-15	Fix MessagesBuilder.last_modified returning the oldest match
+  #13290	closed	2026-11-12	Run `DynamicWorkflow` sub-agents one at a time under `DBOSDurability`, and share a Lambda `parallel` operation across one serializer
+### pydantic-ai: dangling tool
+  [issue] total=44
+  #7906	open	2026-08-30	Streamed PartEndEvent carries the wrong part (or IndexError) after a nameless tool-call delta
+  #11180	open	2026-10-23	`repair_messages` keeps a tool result for a call an earlier request already answered
+  #12360	open	2026-11-03	`repair_messages()` leaves a tool call unanswered when its result arrives after a later response
+  #12543	open	2026-11-04	Native async tool calling on standard models: OpenAI `async: true`, `BackgroundTools`, and a shared concept with realtime
+  #12397	open	2026-11-03	Framework-written history content is unmarked: interrupted calls sent as successful results, placeholder turns, and silently dropped native tool results
+  #12242	open	2026-11-02	[P2] `ClearToolResults` and `DeduplicateFileReads` blank a kept result when a later turn reuses its `tool_call_id`
+  #13508	open	2026-11-14	`OpenAIJsonSchemaTransformer` sends a broken root schema when the root `$ref` has sibling keywords, points into `definitions`, or resolves to nothing
+  #12332	open	2026-11-03	DeepSeek on Azure Foundry emits reasoning with only a closing think tag, leaking thinking text into the visible answer (Responses and Chat Completions)
+  #12351	closed	2026-11-03	is_provider_valid() accepts a history whose tool call a reused `tool_call_id` left dangling
+  #7040	open	2026-08-02	AG-UI: a partial `resume[]` silently strips unaddressed interrupts instead of emitting `RunError`
+  #1489	open	2025-04-15	Cannot leave a model running
+  #5838	open	2026-06-09	Stream and run cancellation semantics tracker
+  [pull-request] total=121
+  #13009	open	2026-11-10	Percent-decode local JSON Pointer `$ref`s in tool schemas
+  #12243	open	2026-11-02	Select compaction tool results by part position so a reused `tool_call_id` can't blank a kept result
+  #10245	open	2026-10-14	Send `toolMetadata` for MCP tool calls on AI SDK 7 and read it back from history
+  #12352	closed	2026-11-03	Treat a response that reuses a still-open `tool_call_id` as unpaired
+  #6257	open	2026-07-04	Add `StopRun` exception to end an agent run with a given output
+  #13489	closed	2026-11-14	Pair replayed tool-search calls and results where the API rejects unpaired ones, with `ModelProfile.rejects_unpaired_tool_calls`
+  #11006	open	2026-10-22	Add the `computer` tool contract to core: `pydantic_ai.computer_use` and `ComputerTool`
+  #12759	closed	2026-11-06	Inline `$defs` in gpt-oss tool schemas
+  #10473	open	2026-10-16	Add SQLite, Postgres and MongoDB backends for `ConversationStore`, and rename the CLAI session store to `SqliteSessionStore`
+  #7995	open	2026-09-02	Give streaming its own docs page, with an event reference
+  #11239	closed	2026-10-25	Fix repair_messages keeping orphaned tool results for answered calls
+  #14044	closed	2026-11-19	Write out `$defs` `$ref`s under `not`, `if`/`then`/`else` and other keywords the inlining walk skips, instead of leaving them dangling
+### pydantic-ai: "unprocessed tool calls"
+  [issue] total=5
+  #12837	open	2026-11-08	[P2] run_stream(): capture_run_messages() and after_run hooks see a history that ends on an unanswered tool call
+  #12156	closed	2026-11-01	A new prompt on a paused conversation silently drops pending deferred calls when a sibling tool executed
+  #7977	closed	2026-09-01	Run cancellation during the first in-flight tool leaves all_messages() unresumable with a new prompt
+  #3219	closed	2025-10-22	Support for `capture_run_messages` to store incomplete results
+  #3488	closed	2025-11-20	Allow `user_prompt` with deferred tool approval
+  [pull-request] total=21
+  #12133	open	2026-10-31	Raise the unprocessed-tool-calls `UserError` when `deferred_tool_results` resolve nothing, instead of recording an empty `ModelRequest`
+  #14086	open	2026-11-20	Report `'incomplete'` for a streamed response that ends before the provider's terminal event
+  #12158	closed	2026-11-01	Raise the unprocessed-tool-calls `UserError` for a new prompt on a paused conversation that left calls unanswered
+  #9783	closed	2026-10-04	Close out interrupted tool calls when resuming a sub-agent with `delegate_task(resume=...)`
+  #9602	closed	2026-10-02	Document when an interrupted `StepPersistence` snapshot needs `repair_messages`
+  #11413	closed	2026-10-26	Keep the response that crosses a token or cost limit in `capture_run_messages`
+  #8705	closed	2026-09-23	Add troubleshooting entries for the errors users actually hit
+  #9426	closed	2026-09-30	Commit an ACP turn up to its usage limit instead of rolling it back
+  #13051	closed	2026-11-10	Pause again when a deferred pause whose step also ran other tools is resumed without `deferred_tool_results`
+  #7142	open	2026-08-04	Add `run_stream_messages()` and model message boundary events
+  #8135	closed	2026-09-05	Record a failed `ToolReturnPart` when a realtime tool raises, and keep a tool call and its speech in one `ModelResponse`
+  #8370	closed	2026-09-16	Expose the message-history repair pipeline as `repair_messages`
+### pydantic-ai: "side effects"
+  [issue] total=81
+  #13781	open	2026-11-17	Carry a durable unit's side effects (state changes, usage, events) back in its recorded output
+  #11380	open	2026-10-26	Pattern guides: grounding validators that check quoted evidence, and not gating side effects on model-reported confidence
+  #11757	open	2026-10-28	Simulated toolset: answer tool calls with a model, for evals and tests of agents whose tools have side effects
+  #11378	open	2026-10-26	Pattern guides: "extract, decide, write" and shared typed state across delegated agents
+  #13115	open	2026-11-10	Run agents in evals with side-effecting tools blocked, recorded and replayable
+  #13321	open	2026-11-13	OpenAI Realtime sends a held-back `response.create` after the conversation was already answered, so the model repeats its last tool call
+  #13224	open	2026-11-12	Run `FileSystem` write tools outside the durable unit with `durable=False` on every engine, after a per-engine replay analysis
+  #5551	open	2026-05-20	Fail-fast option for sequential tool execution (abort downstream tools on upstream failure)
+  #11377	open	2026-10-26	DBOS docs: side-effecting tools and idempotency keys, human-in-the-loop, and nested agents
+  #13232	open	2026-11-12	Callback broadcasts repeat the shared transform in every branch
+  #13428	open	2026-11-13	`OpenAIDecisionsModel` repeats `Agent(instructions=...)` inside every question after the input, so agent instructions are never part of the cacheable prefix
+  #5516	open	2026-05-18	Streaming input to output functions via `AsyncIterable[T]`
+  [pull-request] total=164
+  #12301	open	2026-11-02	Going to Production: start from how a run begins and what a crash costs
+  #14101	open	2026-11-20	Fix `format_as_xml` crash on `RootModel` with scalar or list root
+  #8860	open	2026-09-27	Write clai2's MCP files as UTF-8 and describe the bridge's lock as it is
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #14086	open	2026-11-20	Report `'incomplete'` for a streamed response that ends before the provider's terminal event
+  #9063	open	2026-09-29	Add native `RestateDurability` durable execution
+  #10534	closed	2026-10-16	Fix the Restate example's Hypercorn install and imports, and stop promising side effects are never duplicated
+  #10533	closed	2026-10-16	Run the Prefect task-config example inside a flow so its retry settings apply, and stop promising exactly-once side effects
+  #12903	closed	2026-11-09	Narrow images in directly constructed file parts
+  #11894	closed	2026-10-29	Reset the CodeMode session when Monty kills a worker for its memory limit
+  #13124	open	2026-11-10	Allow per-run capabilities that need nothing registered in durable runs, and add `register_model()` for test models
+  #12243	open	2026-11-02	Select compaction tool results by part position so a reused `tool_call_id` can't blank a kept result
+### pydantic-ai: StepPersistence
+  [issue] total=61
+  #12672	open	2026-11-06	StepPersistence leaves a tool call skipped with `SkipToolExecution` at `started`
+  #9184	open	2026-05-24	Wire StepPersistence attributes into the active OpenTelemetry span
+  #12997	open	2026-11-09	Remove the harness deprecation shims at V1
+  #9223	open	2026-08-04	`StepPersistence.from_spec` publishes no fields to the AgentSpec schema
+  #13258	open	2026-11-12	Temporal: recommended pattern for agents, tools, skills and sub-agents defined at run time from a database
+  #13110	open	2026-11-10	Let a capability declare persisted state that a run returns and accepts back
+  #13458	open	2026-11-14	The `Dataset` JSON schema rejects the dict form for an evaluator with at most one parameter, like `{EqualsExpected: {}}`, which loads
+  #10597	open	2026-10-19	Redis StepStore for Harness
+  #9185	open	2026-05-25	Capability: `MediaExternalizer` -- replace `BinaryContent` with URLs before model requests
+  #11377	open	2026-10-26	DBOS docs: side-effecting tools and idempotency keys, human-in-the-loop, and nested agents
+  #13979	open	2026-11-19	Make the agent spec and `Dataset` schemas agree with the classes they load
+  #10618	open	2026-10-19	Ephemeral side turns: ask without appending to durable session history
+  [pull-request] total=52
+  #12301	open	2026-11-02	Going to Production: start from how a run begins and what a crash costs
+  #13369	open	2026-11-13	Set `run_id` on a request resumed from `message_history` before `before_model_request` hooks run
+  #11227	open	2026-10-24	`FileStepStore`: write images to the media folder whatever their size
+  #8955	open	2026-09-28	Clarify harness snapshot and example documentation
+  #10473	open	2026-10-16	Add SQLite, Postgres and MongoDB backends for `ConversationStore`, and rename the CLAI session store to `SqliteSessionStore`
+  #13652	closed	2026-11-16	Recommend `ConversationStore` for storing sessions and document moving sessions off `StepPersistence`
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #12620	closed	2026-11-05	fix(step-persistence): finish tool effect when the tool raises ModelRetry or ToolFailed
+  #11993	closed	2026-10-30	Keep `StepPersistence` failure records when an `anyio` scope cancels a run
+  #12638	closed	2026-11-05	Record a `StepPersistence` tool call that ends in `ModelRetry` or `ToolFailed` as `failed` instead of leaving it `started`
+  #10786	open	2026-10-20	Let `ConversationSearch` find matches through a SQLite FTS5 index when it reads a `SqliteStepStore`
+  #11405	closed	2026-10-26	Document the start and reduce order of parallel graph steps and compare `StepPersistence` with durable execution
+### pydantic-ai: resume interrupted
+  [issue] total=35
+  #11951	open	2026-10-30	Harness Shell: continuing a conversation after a crash runs the interrupted command again
+  #11425	open	2026-10-26	Keep the over-limit response in history on the remaining paths: `ModelRetry` rejection, `pause_turn`, background continuations, and `FallbackModel` rejections
+  #11480	open	2026-10-27	[P2] [Bug]: ModelResponse dropped from history when ModelRetry crosses UsageLimits
+  #10926	open	2026-10-21	Approved tool runs again if the process dies after it executed but before the history was saved
+  #7040	open	2026-08-02	AG-UI: a partial `resume[]` silently strips unaddressed interrupts instead of emitting `RunError`
+  #6889	open	2026-07-29	UI adapters swallow `RunCancelled`: no way to observe a cancelled run's state through AG-UI/Vercel streams
+  #5838	open	2026-06-09	Stream and run cancellation semantics tracker
+  #6460	open	2026-07-14	[P2] Cancellation semantics: a level-triggered contract for agent runs, streams, tools, and durable execution
+  #9786	open	2026-10-04	Add a core message store protocol, with format versioning, retention and a scope key
+  #8185	open	2026-09-07	Vercel AI stream surface has no carrier for tool outcome claims — echoed turns reload `retried` as `failed`
+  #4302	open	2026-02-11	Support nested deferred tool calls, i.e. subagents or code mode calling tools that require approval
+  #12839	closed	2026-11-08	A `ModelRetry` from a model hook drops the billed response from history when a usage limit stops the run
+  [pull-request] total=146
+  #12840	open	2026-11-08	Keep the response a hook rejected when a usage limit stops the run
+  #11496	open	2026-10-27	fix(agent): preserve model response in history when ModelRetry crosses usage limits
+  #14097	open	2026-11-20	Keep a Daytona sandbox awake while a command runs, and start one stopped under a held backend in the same call
+  #13746	open	2026-11-17	Add `AdaptiveReasoning` to set the `thinking` effort per model request, high when a turn starts or a tool fails and lower on routine steps
+  #11960	open	2026-10-30	Keep a continued conversation from re-running an interrupted harness `Shell` command, and a repeated tool call ID from returning another call's output
+  #14086	open	2026-11-20	Report `'incomplete'` for a streamed response that ends before the provider's terminal event
+  #14104	open	2026-11-20	Start a held `BoxdSandboxBackend`'s machine again after it was stopped
+  #14170	open	2026-11-22	Show a result row under every pax shell call and mark failed or refused tool calls
+  #13340	open	2026-11-13	Document how `deps`, `usage` and failures cross Temporal child-workflow tools, and how to continue fan-out workflows as new
+  #13689	closed	2026-11-16	Add `SubAgent(keep_partial_output=)`, passing a sub-agent's last text to the parent when its own timeout or usage budget stops it
+  #9783	closed	2026-10-04	Close out interrupted tool calls when resuming a sub-agent with `delegate_task(resume=...)`
+  #10069	closed	2026-10-09	Charge the partial response of an interrupted stream in `SpendLimits`
+### pydantic-ai: "fault injection"
+  [issue] total=1
+  #5536	open	2026-05-20	HITL approval signal is a plain bool — hardening proposal (narrow vs proper fix)
+  [pull-request] total=3
+  #10767	closed	2026-10-20	Keep the last valid authored capability on a failed re-author, share the `CapabilityStore` lock per directory, and let runs cancel authoring
+  #10606	closed	2026-10-19	Protect the `gh-aw` canonical session capture from agent tools
+  #10444	closed	2026-10-16	Add WebSocket transport to OpenAI Responses
+### pydantic-ai: unknown_after_crash
+  [issue] total=1
+  #9184	open	2026-05-24	Wire StepPersistence attributes into the active OpenTelemetry span
+  [pull-request] total=2
+  #11731	open	2026-10-28	Document DBOS side-effecting tools, human-in-the-loop approvals, and nested agents
+  #12638	closed	2026-11-05	Record a `StepPersistence` tool call that ends in `ModelRetry` or `ToolFailed` as `failed` instead of leaving it `started`
+### pydantic-ai: durable tool retry
+  [issue] total=180
+  #13224	open	2026-11-12	Run `FileSystem` write tools outside the durable unit with `durable=False` on every engine, after a per-engine replay analysis
+  #11889	open	2026-10-29	Give tool and output retry exhaustion their own `UnexpectedModelBehavior` subclasses
+  #12829	open	2026-11-07	Vercel AI adapter: emit `reset-step` when a retried durable model activity republishes its stream
+  #13713	open	2026-11-17	How should `FunctionToolset` stop writing its defaults onto a shared `Tool` without changing in-flight durable workflows?
+  #6979	open	2026-07-30	Durable dynamic-tool schema errors retry engine units instead of prompting the model
+  #13934	open	2026-11-18	Durable engines journal `Json[...]` tool arguments as their parsed value, so revalidation rejects them with `json_type`
+  #10729	open	2026-10-20	`AWSLambdaDurability`: defects found reviewing against the real Durable Execution SDK
+  #13782	open	2026-11-17	A `SharedState` capability for application state that concurrent durable agents read and write
+  #4764	open	2026-03-21	Native Azure Durable Functions support for Pydantic AI durable execution
+  #13318	open	2026-11-12	Carry typed model errors across the AWS Lambda, Azure Durable Task and Render unit boundaries, and stop retrying non-retryable ones
+  #13201	open	2026-11-11	Fail the run when a `CodeMode` nested call hits an engine without an external-event waiter, instead of sending the model a retry
+  #12752	open	2026-11-06	Keep replayed work out of telemetry on every durable engine, not just AWS Lambda and Temporal
+  [pull-request] total=405
+  #9063	open	2026-09-29	Add native `RestateDurability` durable execution
+  #12846	open	2026-11-08	Answer a retried call with an empty `tool_call_id` under that same id
+  #11348	open	2026-10-26	Add `RunContext.submit_output()` to let a tool submit the run's final output
+  #13274	open	2026-11-12	Route agent-graph waits through `BaseDurabilityCapability.durable_sleep`, making them durable on AWS Lambda, Absurd and pgtask
+  #13893	open	2026-11-18	Match DBOS child workflows to their tool calls by a stable ID on recovery
+  #13340	open	2026-11-13	Document how `deps`, `usage` and failures cross Temporal child-workflow tools, and how to continue fan-out workflows as new
+  #6510	open	2026-07-15	Apply tool timeouts in `ToolManager` so all toolsets honor them
+  #13527	open	2026-11-15	Fail a `CodeMode` run when a DBOS replay diverges inside `run_code`, and drop the elapsed-time limit under every durable engine
+  #6956	open	2026-07-30	Document how custom toolsets behave under durable execution
+  #13215	open	2026-11-12	Add a Temporal `ExternalEventWaiter` so `HandleDeferredToolCalls` token handlers and `AskUser` wait durably in a workflow
+  #10985	open	2026-10-22	Separate deferred-tool schema disclosure from callability
+  #10737	open	2026-10-20	Document the per-run MCP session, retries, and claim failures in `AbsurdDurability`, and test tracing on replay
+### harness: persistence
+  [issue] total=20
+  #782	closed	2026-09-03	step-persistence marker-compatibility docs don't cover the escaped-keys marker format
+  #382	closed	2026-07-17	Step Persistence and Memory add mongodb
+  #625	closed	2026-08-14	Media is presented as a capability but is step-persistence plumbing — clean up its docs placement
+  #1	open	2026-03-20	[Tracking] Capabilities abstraction for pydantic-ai
+  #803	closed	2026-09-04	Make `FileStepStore` corrupt-snapshot coverage deterministic
+  #31	closed	2026-03-20	Session persistence capability
+  #149	closed	2026-04-02	GraphAgentState serialization + resume_from_state() for durable checkpointing
+  #814	closed	2026-09-07	Closed invitation: Agentic action-recovery integration
+  #856	closed	2026-09-10	Allow per-delegation subagent event handlers to inspect parent context
+  #810	closed	2026-09-07	SnapshotHistorySource.run_history duplicates a run's history with serializing stores (boundary snapshot predates run-metadata stamping)
+  #493	closed	2026-07-28	CE rule: comment on an open issue when docs or code start referencing it
+  #151	closed	2026-04-02	General Interrupt exception with serializable continuation (pause-at-any-point)
+  [pull-request] total=98
+  #773	open	2026-09-02	Add Redis Step Persistance
+  #753	open	2026-09-01	Publish explicit `StepPersistence.from_spec` fields to the `AgentSpec` schema
+  #764	open	2026-09-01	Add docs rules to `AGENTS.md` and apply them across capability docs
+  #760	open	2026-09-01	Adapt capabilities to full-lifecycle model hooks
+  #1038	open	2026-09-22	Await and checkpoint `TrajectoryJudge` evaluations in durable runs
+  #399	open	2026-07-21	Add `AbsurdDurability` for crash-resumable agent runs
+  #1114	open	2026-09-25	Add `google_workspace` as a built-in `clai2` plugin backed by harness `GoogleWorkspace`
+  #1116	open	2026-09-25	Add a built-in `ordinal` plugin to `clai2` with token or keyring-backed browser sign-in
+  #738	open	2026-08-31	Host messaging channels through ordinary agent runs
+  #1049	open	2026-09-23	Offer Logfire onboarding in `clai2` with keyring-backed credentials
+  #840	closed	2026-09-09	Document the escaped-keys marker format in `step_persistence` docs
+  #1063	open	2026-09-23	Add `CapabilityComposer` to let a picker model (Jev by default) compose a sub-agent per prompt from a capability allowlist
+### harness: crash
+  [issue] total=12
+  #577	closed	2026-08-10	`SummarizingCompaction` crashes on `ToolAvailabilityDeltaPart` after a deferred capability loads
+  #602	closed	2026-08-13	FileSystem `create_directory` crashes the whole run when the path exists as a file
+  #1076	closed	2026-09-24	`CodeMode` results containing a `type` (or other non-JSON host object) abort the run
+  #380	closed	2026-07-16	`ClearToolResults` corrupts history: clearing a `ToolSearchReturnPart` crashes the run’s next request with TypeError
+  #215	closed	2026-04-18	CodeMode crashes with published pydantic-monty: FunctionSnapshot.resume() got unexpected keyword argument 'future'
+  #511	closed	2026-07-30	`externalize_media` decodes `BinaryContent` with standard base64, but pydantic-ai serializes URL-safe — crashes on most real binary, silently corrupts some
+  #253	closed	2026-05-24	StepPersistence: save snapshot in `on_run_error` when partial history is provider-valid
+  #617	closed	2026-08-14	Symlink loops are reported as "file not found" by filesystem read operations on Python 3.13+
+  #585	closed	2026-08-12	Make the harness typecheck against pydantic-ai `main`: `RunContext.model` is now `AbstractModel` and `SpeechPart` joins the message-part unions
+  #382	closed	2026-07-17	Step Persistence and Memory add mongodb
+  #401	closed	2026-07-21	Bug: `ClampOversizedMessages` clamps typed `ToolCallPart` subclasses, breaking `ModelMessagesTypeAdapter` round-trip (resume via `StepPersistence`)
+  #385	closed	2026-07-17	Follow-up: adopt pydantic-ai#6319 and drop the provider-validity gate in StepPersistence
+  [pull-request] total=72
+  #390	open	2026-07-20	Fix ShellToolset process-kill crash on Windows
+  #399	open	2026-07-21	Add `AbsurdDurability` for crash-resumable agent runs
+  #529	open	2026-08-03	Add Scheduling capability and ScheduleRunner
+  #812	open	2026-09-07	feat: add RetryPolicy capability for configurable retry with exponential backoff
+  #1124	open	2026-09-25	Add Sign in with Google to the CLAI2 `google_workspace` plugin
+  #739	open	2026-08-31	Connect ChannelHost to the Telegram Bot API
+  #1120	open	2026-09-25	Add a built-in `posthog` plugin to `clai2` with keyring-backed sign-in
+  #217	open	2026-04-21	Add Home Automation capability
+  #794	open	2026-09-04	Connect `ChannelHost` to verified Slack events
+  #740	open	2026-08-31	Connect ChannelHost to the Slack Events API
+  #343	open	2026-07-09	feat: `ConfinedAuthoring` -- let an agent author its own typed, sandboxed, persistent tools
+  #804	open	2026-09-04	Add a Discord adapter to the `Channels` API
+### harness: idempot
+  [issue] total=0
+  [pull-request] total=0
+### harness: resume
+  [issue] total=23
+  #879	closed	2026-09-16	Make `Coder` file-read truncation explicit and reliably resumable
+  #149	closed	2026-04-02	GraphAgentState serialization + resume_from_state() for durable checkpointing
+  #995	closed	2026-09-20	Support headless prompts and a short model flag in `clai2`
+  #1	open	2026-03-20	[Tracking] Capabilities abstraction for pydantic-ai
+  #151	closed	2026-04-02	General Interrupt exception with serializable continuation (pause-at-any-point)
+  #373	closed	2026-07-15	StepPersistence cannot resume after completed tool-call boundary
+  #401	closed	2026-07-21	Bug: `ClampOversizedMessages` clamps typed `ToolCallPart` subclasses, breaking `ModelMessagesTypeAdapter` round-trip (resume via `StepPersistence`)
+  #215	closed	2026-04-18	CodeMode crashes with published pydantic-monty: FunctionSnapshot.resume() got unexpected keyword argument 'future'
+  #790	closed	2026-09-04	Approve an optional WebSocket dependency for Discord Channels
+  #385	closed	2026-07-17	Follow-up: adopt pydantic-ai#6319 and drop the provider-validity gate in StepPersistence
+  #577	closed	2026-08-10	`SummarizingCompaction` crashes on `ToolAvailabilityDeltaPart` after a deferred capability loads
+  #441	closed	2026-07-23	`StepStore`: bound snapshot growth with opt-in `max_snapshots_per_run`
+  [pull-request] total=78
+  #399	open	2026-07-21	Add `AbsurdDurability` for crash-resumable agent runs
+  #529	open	2026-08-03	Add Scheduling capability and ScheduleRunner
+  #804	open	2026-09-04	Add a Discord adapter to the `Channels` API
+  #1095	open	2026-09-24	Adding Render workflows integration for Pydantic harness
+  #476	open	2026-07-26	Add `NimbleSearch` and `NimbleAgent` capabilities
+  #905	closed	2026-09-17	Persist CLAI 2 sessions through `StepPersistence` with `/resume`, `/sessions`, and `--resume`
+  #1105	open	2026-09-25	Remove unchanged `clai2 --worktree` checkouts and their branches on exit without prompting
+  #975	open	2026-09-19	Show available `CLAI2` updates without interrupting terminal work
+  #703	open	2026-08-26	Add the `final-review` skill for PRs that have already been iterated on
+  #935	closed	2026-09-18	Make CLAI resume browser focus clearer
+  #739	open	2026-08-31	Connect ChannelHost to the Telegram Bot API
+  #926	closed	2026-09-18	Add saved sessions and a resume browser to CLAI

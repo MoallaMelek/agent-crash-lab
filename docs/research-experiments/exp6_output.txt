@@ -1,0 +1,6 @@
+pydantic_ai 2.71.0
+ToolDefinition fields: ['name', 'parameters_json_schema', 'description', 'outer_typed_dict_key', 'strict', 'sequential', 'kind', 'metadata', 'timeout', 'durable', 'defer_loading', 'unless_native', 'with_native', 'tool_kind', 'unless_tool_kind', 'return_schema', 'include_return_schema', 'toolset_id', 'capability_id']
+run1 output type: DeferredToolRequests ['c1']
+approval resumed twice from same stored history -> effects: 2 [('01a204c0-9f09-722f-ac67-6ab69a437254', 'c1', True), ('01a204c0-9f0e-7173-8f8e-1696b6e40d88', 'c1', True)]
+run_id reuse -> UserError: `run_id='01a204c0-9ee2-72cf-87e9-26a24e44a131'` already appears in `message_history`. Each agent run needs a distinct `run_id`; reuse breaks `new_messages()`. Use `conversation_id` to correlate across
+message run_ids in stored history: {'01a204c0-9ee2-72cf-87e9-26a24e44a131'}

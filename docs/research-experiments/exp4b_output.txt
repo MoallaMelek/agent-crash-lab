@@ -1,0 +1,18 @@
+RANDOM_IDS naive_iter    kill@after_effect       tool=idem resume_default     charges=1 -> OK
+       HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+       OUTPUT done: success: charged ch_1
+RANDOM_IDS folded_iter   kill@next_model_request tool=idem resume_default     charges=1 -> OK
+       HISTORY_TAIL ["ModelResponse(complete):['tool-call']", "ModelRequest(complete):['tool-return']"]
+       OUTPUT done: success: charged ch_1
+RANDOM_IDS step          kill@after_effect       tool=idem resume_default     charges=2 -> DUPLICATE
+       UNRESOLVED [('call-42ffa1de', 'started')]
+       LOOKUP_ERROR no continuable snapshot for run_id 'run-1'
+       RESTARTED done: success: charged ch_2
+RANDOM_IDS step_frontier kill@after_effect       tool=idem resume_default     charges=2 -> DUPLICATE
+       UNRESOLVED [('call-5afeaa04', 'started')]
+       HISTORY_TAIL ["ModelRequest(complete):['user-prompt']"]
+       OUTPUT done: success: charged ch_2
+RANDOM_IDS step_frontier kill@after_effect       tool=idem resume_interrupted charges=1 -> OK
+       UNRESOLVED [('call-a675892a', 'started')]
+       HISTORY_TAIL ["ModelRequest(complete):['user-prompt']", "ModelResponse(complete):['tool-call']"]
+       OUTPUT done: success: charged ch_1
