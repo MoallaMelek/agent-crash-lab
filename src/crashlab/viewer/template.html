@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Recorded SIGKILL crash-matrix evidence for side-effecting Pydantic AI tools.">
+<title>Agent Crash Lab: recorded evidence</title>
+<style>
+:root {
+  --bg: #f4f7fb; --surface: #ffffff; --panel: #ffffff; --panel-2: #f5f8fc;
+  --border: #d9e2ee; --border-strong: #b8c7d9;
+  --text: #182235; --text-soft: #46566f; --text-muted: #6b7a92;
+  --accent: #2f5fd0; --focus: #2f5fd0;
+  --ok: #1f7a46; --ok-bg: #e3f4ea;
+  --dup: #b42318; --dup-bg: #fde7e4;
+  --miss: #9a5b00; --miss-bg: #fff1d6;
+  --strand: #6a3fb5; --strand-bg: #efe7fb;
+  --amb: #0e6f7a; --amb-bg: #dcf2f4;
+  --knr: #5b6577; --knr-bg: #eceff4;
+  --na: #6b7a92; --na-bg: transparent;
+  --err: #ffffff; --err-bg: #7a1020;
+  --kill: #b42318;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070a12; --surface: #0d1422; --panel: #111a2b; --panel-2: #172234;
+    --border: #25334a; --border-strong: #334863;
+    --text: #edf4ff; --text-soft: #b9c7da; --text-muted: #8090a8;
+    --accent: #8fb0ff; --focus: #8fb0ff;
+    --ok: #6fd69c; --ok-bg: #11301f;
+    --dup: #ff8a7a; --dup-bg: #3a1414;
+    --miss: #f5c060; --miss-bg: #362708;
+    --strand: #c3a3ff; --strand-bg: #2a1d45;
+    --amb: #6fd6e0; --amb-bg: #0d2f33;
+    --knr: #a8b3c4; --knr-bg: #1b2433;
+    --na: #8090a8;
+    --err: #ffffff; --err-bg: #8f1a2b;
+    --kill: #ff8a7a;
+  }
+}
+* { box-sizing: border-box; }
+html { font-size: 15px; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.5; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--mono); font-size: .86em; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1440px; margin: 0 auto; padding: 0 24px; }
+header.top { padding: 28px 0 12px; }
+header.top h1 { margin: 0; font-size: 1.6rem; letter-spacing: -.01em; }
+header.top p.lede { margin: 6px 0 0; color: var(--text-soft); max-width: 75ch; }
+.banner { margin: 16px 0 8px; padding: 12px 16px; border: 1px solid var(--border-strong); border-left: 4px solid var(--accent);
+  background: var(--panel); border-radius: var(--radius); font-size: .93rem; }
+.banner strong { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 2px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+.stat { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; min-width: 120px; }
+.stat .n { font-size: 1.3rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: .78rem; color: var(--text-muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 10px 0 0; font-size: .82rem; color: var(--text-soft); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(380px, 1fr); gap: 20px; padding: 12px 0 40px; align-items: start; }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+section.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+section.card + section.card { margin-top: 20px; }
+h2 { font-size: 1.05rem; margin: 0 0 10px; }
+h3 { font-size: .92rem; margin: 18px 0 6px; color: var(--text-soft); text-transform: uppercase; letter-spacing: .05em; }
+details.filters { margin: -4px 0 12px; }
+details.filters .controls { margin: 8px 0 0; }
+.controls { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 12px; margin-bottom: 12px; }
+.controls label { display: flex; flex-direction: column; font-size: .76rem; color: var(--text-muted); gap: 3px; }
+select, input[type=search] { font: inherit; font-size: .88rem; padding: 5px 8px; color: var(--text); background: var(--panel-2);
+  border: 1px solid var(--border); border-radius: 7px; }
+.pivot-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+thead th { position: sticky; top: 0; background: var(--panel-2); font-weight: 600; z-index: 1; }
+table.pivot th[scope=row] { white-space: nowrap; font-family: var(--mono); font-weight: 500; font-size: .8rem; background: var(--panel-2); }
+table.pivot thead th { font-family: var(--mono); font-size: .76rem; font-weight: 500; white-space: nowrap; }
+table.pivot td { min-width: 64px; }
+table.pivot th .rowsub { display: block; max-width: 190px; white-space: normal; font-family: var(--sans); font-size: .72rem; color: var(--text-muted); line-height: 1.3; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { font: 600 .7rem/1 var(--mono); padding: 5px 6px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; letter-spacing: .02em; }
+.chip[aria-pressed=true] { outline: 2px solid var(--text); outline-offset: 1px; }
+.v-OK { color: var(--ok); background: var(--ok-bg); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.v-DUPLICATE { color: var(--dup); background: var(--dup-bg); border-color: color-mix(in srgb, var(--dup) 40%, transparent); }
+.v-MISSING { color: var(--miss); background: var(--miss-bg); border-color: color-mix(in srgb, var(--miss) 40%, transparent); }
+.v-STRANDED { color: var(--strand); background: var(--strand-bg); border-color: color-mix(in srgb, var(--strand) 40%, transparent); }
+.v-AMBIGUOUS_RESOLVED { color: var(--amb); background: var(--amb-bg); border-color: color-mix(in srgb, var(--amb) 40%, transparent); }
+.v-KILL_NOT_REACHED { color: var(--knr); background: var(--knr-bg); border-color: var(--border); }
+.v-NOT_APPLICABLE { color: var(--na); background: var(--na-bg); border: 1px dashed var(--border-strong); }
+.v-LAB_ERROR { color: var(--err); background: var(--err-bg); }
+.badge { display: inline-block; font: 650 .78rem/1 var(--mono); padding: 5px 8px; border-radius: 6px; border: 1px solid transparent; }
+.muted { color: var(--text-muted); }
+.soft { color: var(--text-soft); }
+.differs { color: var(--dup); font-weight: 600; }
+table.cells td.id button { font: 500 .8rem var(--mono); background: none; border: 0; color: var(--accent); cursor: pointer; padding: 0; text-align: left; }
+table.cells tr[aria-selected=true] td { background: var(--panel-2); }
+#detail { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+#detail .empty { color: var(--text-muted); padding: 30px 6px; text-align: center; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: .85rem; }
+.kv dt { color: var(--text-muted); }
+.kv dd { margin: 0; font-family: var(--mono); font-size: .82rem; }
+.explain { background: var(--panel-2); border-radius: 8px; padding: 10px 12px; font-size: .9rem; }
+ul.resp { padding-left: 0; list-style: none; margin: 0; font-size: .86rem; }
+ul.resp li { padding: 5px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 170px 1fr; gap: 8px; }
+.cat { font: 600 .72rem var(--mono); color: var(--text-soft); }
+ol.tl { list-style: none; margin: 0; padding: 0; font-size: .8rem; }
+ol.tl li { display: grid; grid-template-columns: 34px 62px 150px 1fr; gap: 6px; padding: 3px 4px; border-left: 3px solid transparent; }
+ol.tl li .seq, ol.tl li .t { color: var(--text-muted); font-family: var(--mono); font-size: .74rem; }
+ol.tl li .ev { font-family: var(--mono); font-size: .76rem; }
+ol.tl li .d { font-family: var(--mono); font-size: .76rem; color: var(--text-soft); word-break: break-word; }
+ol.tl li.effect { border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+ol.tl li.effect .d { color: var(--text); }
+ol.tl li.persist .ev { color: var(--text-muted); }
+ol.tl li.kill { border-left-color: var(--kill); background: color-mix(in srgb, var(--kill) 13%, transparent); font-weight: 600; }
+ol.tl li.kill .d, ol.tl li.kill .ev { color: var(--kill); }
+.lane-head { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 0 4px; font-size: .82rem; }
+.lane-head b { font-size: .86rem; }
+.restart { margin: 8px 0; padding: 6px 10px; border: 1px dashed var(--border-strong); border-radius: 8px; font-size: .8rem; color: var(--text-soft); }
+table.mini { font-size: .8rem; }
+table.mini td, table.mini th { padding: 4px 6px; font-family: var(--mono); font-size: .76rem; }
+.chk-pass { color: var(--ok); } .chk-fail { color: var(--dup); } .chk-info { color: var(--text-muted); }
+details summary { cursor: pointer; color: var(--text-soft); font-size: .85rem; }
+pre { font-family: var(--mono); font-size: .74rem; background: var(--panel-2); padding: 8px; border-radius: 8px; overflow: auto; max-height: 320px; }
+footer { color: var(--text-muted); font-size: .8rem; padding: 0 0 30px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+noscript div { padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Agent Crash Lab</h1>
+    <p class="lede">Which combination of persistence pattern, resume mechanism and idempotency-key strategy gives exactly one
+      external effect after a real <code>SIGKILL</code> at each execution boundary of a Pydantic AI agent, and which
+      combinations duplicate, lose or strand it. Ground truth is a simulated payment provider (FakePay) in its own SQLite file.</p>
+    <div class="banner" role="note" aria-label="About this page"><strong>Recorded evidence</strong><span id="banner">__CRASHLAB_BANNER__</span></div>
+    <noscript><div>This viewer needs JavaScript to render the matrix. The raw data is in <code>results.json</code> next to the evidence summary.</div></noscript>
+    <div class="stats" id="stats" aria-label="Summary"></div>
+    <div class="legend" id="legend" aria-label="Verdict legend"></div>
+  </header>
+  <main>
+    <div>
+      <section class="card" aria-labelledby="pivot-h">
+        <h2 id="pivot-h">Matrix</h2>
+        <div class="controls" id="controls"></div>
+        <div class="pivot-wrap"><table class="pivot" id="pivot" aria-describedby="pivot-help"></table></div>
+        <p id="pivot-help" class="muted" style="font-size:.8rem;margin:8px 0 0">Each chip is one cell; its text is the verdict
+          (colour is a secondary cue). Choose the row and column axes and filter by any axis. Select a chip to open the cell.</p>
+      </section>
+      <section class="card" aria-labelledby="cells-h">
+        <h2 id="cells-h">Cells <span class="muted" id="cells-count"></span></h2>
+        <div class="pivot-wrap" style="max-height:620px"><table class="cells" id="cells"></table></div>
+      </section>
+    </div>
+    <aside class="card" id="detail" aria-live="polite" aria-label="Cell detail"><div class="empty">Select a cell to see its execution timeline, provider effects, StepPersistence state and verdict.</div></aside>
+  </main>
+  <footer>Generated <span class="mono">__CRASHLAB_GENERATED__</span>. "Exactly one effect" means: in this scenario, with a provider that honours idempotency keys or supports lookup. It is not an exactly-once guarantee. SIGKILL is not power loss: the OS page cache survives it.</footer>
+</div>
+<script id="crashlab-data" type="application/json">__CRASHLAB_DATA__</script>
+<script>
+(function () {
+  'use strict';
+  const DATA = JSON.parse(document.getElementById('crashlab-data').textContent);
+  const CELLS = DATA.cells;
+  const ABBR = { OK: 'OK', DUPLICATE: 'DUP', MISSING: 'MISS', STRANDED: 'STRAND', AMBIGUOUS_RESOLVED: 'AMBIG', KILL_NOT_REACHED: 'NO-KILL', NOT_APPLICABLE: 'N/A', LAB_ERROR: 'ERR' };
+  const VERDICT_TEXT = {
+    OK: 'one effect each, run completed, transcript consistent',
+    DUPLICATE: 'more than one effect',
+    MISSING: 'no effect, but the run completed',
+    STRANDED: 'recovery raised or gave up',
+    AMBIGUOUS_RESOLVED: 'one effect, transcript disagrees with provider',
+    KILL_NOT_REACHED: 'configured kill point never fired',
+    NOT_APPLICABLE: 'combination not built (would need faking)',
+    LAB_ERROR: 'the lab failed, not the system under test'
+  };
+  const AXES = ['finding', 'scenario', 'persistence', 'resume', 'key', 'ids', 'after_interrupted', 'kill', 'crash', 'verdict'];
+  const AXIS_LABEL = { finding: 'Finding', scenario: 'Scenario', persistence: 'Persistence', resume: 'Resume', key: 'Effect key', ids: 'Tool-call ids', after_interrupted: 'Model after interrupted', kill: 'Kill point', crash: 'Crash mode', verdict: 'Verdict' };
+  const state = { row: 'finding', col: 'persistence', filters: {}, q: '', selected: null };
+
+  function axisValue(c, axis) {
+    if (axis === 'finding') return c.finding;
+    if (axis === 'verdict') return c.verdict;
+    return String(c.config[axis]);
+  }
+  function axisValues(axis) {
+    const order = axis === 'finding' ? Object.keys(DATA.findings) : (DATA.axes[axis] || []);
+    const present = new Set(CELLS.map(c => axisValue(c, axis)));
+    const vals = order.filter(v => present.has(v));
+    present.forEach(v => { if (!vals.includes(v)) vals.push(v); });
+    return vals;
+  }
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    if (attrs) for (const [k, v] of Object.entries(attrs)) {
+      if (v === null || v === undefined || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : String(v));
+    }
+    for (const kid of kids.flat()) {
+      if (kid === null || kid === undefined || kid === false) continue;
+      el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
+  }
+  function badge(v) { return h('span', { class: 'badge v-' + v, text: v }); }
+  function effectsText(c) { return Object.entries(c.effect_counts || {}).map(([k, n]) => (k === 'charge_order' ? 'charges ' : 'notifications ') + n).join(', '); }
+  function filtered() {
+    const q = state.q.trim().toLowerCase();
+    return CELLS.filter(c => {
+      for (const [axis, val] of Object.entries(state.filters)) if (val && axisValue(c, axis) !== val) return false;
+      if (q && !(c.id.toLowerCase().includes(q) || (c.claim || '').toLowerCase().includes(q))) return false;
+      return true;
+    });
+  }
+
+  function renderStats() {
+    const s = DATA.summary, run = DATA.run || {};
+    const stats = document.getElementById('stats');
+    const items = [[s.cells, 'cells'], [run.repeat || 1, 'runs per cell'], [s.reproducible + '/' + s.cells, 'reproducible'],
+      [(s.expectations.met || 0) + '/' + (s.cells - (s.expectations.unchecked || 0)), 'match expected verdict'], [(run.duration_s || 0) + ' s', 'matrix wall time']];
+    for (const [n, l] of items) stats.append(h('div', { class: 'stat' }, h('div', { class: 'n', text: n }), h('div', { class: 'l', text: l })));
+    const legend = document.getElementById('legend');
+    for (const v of DATA.axes.verdict) {
+      const n = (s.verdicts || {})[v] || 0;
+      legend.append(h('span', null, h('span', { class: 'chip v-' + v, 'aria-hidden': 'true', text: ABBR[v] }), v + ' (' + n + '): ' + VERDICT_TEXT[v]));
+    }
+  }
+
+  function renderControls() {
+    const box = document.getElementById('controls');
+    const mkAxisSel = (id, key, label) => {
+      const sel = h('select', { id, onchange: e => { state[key] = e.target.value; renderAll(); } },
+        AXES.map(a => h('option', { value: a, selected: state[key] === a, text: AXIS_LABEL[a] })));
+      return h('label', { for: id }, label, sel);
+    };
+    const q = h('input', { type: 'search', id: 'q', placeholder: 'cell id or claim', oninput: e => { state.q = e.target.value; renderAll(); } });
+    box.append(mkAxisSel('row-axis', 'row', 'Rows'), mkAxisSel('col-axis', 'col', 'Columns'), h('label', { for: 'q' }, 'Search', q));
+    const grid = h('div', { class: 'controls' });
+    const summary = h('summary', { id: 'filter-summary', text: 'Filters (none active)' });
+    for (const axis of AXES) {
+      const id = 'f-' + axis;
+      const sel = h('select', { id, onchange: e => { state.filters[axis] = e.target.value; updateFilterSummary(); renderAll(); } },
+        h('option', { value: '', text: 'all' }), axisValues(axis).map(v => h('option', { value: v, text: v })));
+      grid.append(h('label', { for: id }, AXIS_LABEL[axis], sel));
+    }
+    box.after(h('details', { class: 'filters' }, summary, grid));
+  }
+  function updateFilterSummary() {
+    const active = Object.entries(state.filters).filter(([, v]) => v);
+    document.getElementById('filter-summary').textContent = active.length
+      ? 'Filters (' + active.map(([a, v]) => AXIS_LABEL[a] + '=' + v).join(', ') + ')' : 'Filters (none active)';
+  }
+
+  function chip(c) {
+    return h('button', {
+      class: 'chip v-' + c.verdict, type: 'button', 'aria-pressed': state.selected === c.id ? 'true' : 'false',
+      'aria-label': c.id + ': ' + c.verdict + (c.expectation === 'differs' ? ' (differs from expected ' + c.expected + ')' : ''),
+      title: c.id + '\n' + (c.claim || '') + '\n' + c.verdict + ' - ' + effectsText(c),
+      onclick: () => select(c.id)
+    }, ABBR[c.verdict] + (c.expectation === 'differs' ? '!' : ''));
+  }
+
+  function renderPivot(cells) {
+    const t = document.getElementById('pivot');
+    t.replaceChildren();
+    const rows = axisValues(state.row).filter(v => cells.some(c => axisValue(c, state.row) === v));
+    const cols = axisValues(state.col).filter(v => cells.some(c => axisValue(c, state.col) === v));
+    t.append(h('caption', { class: 'sr-only', text: 'Cells by ' + AXIS_LABEL[state.row] + ' (rows) and ' + AXIS_LABEL[state.col] + ' (columns)' }));
+    t.append(h('thead', null, h('tr', null, h('th', { scope: 'col', text: AXIS_LABEL[state.row] + ' \\ ' + AXIS_LABEL[state.col] }), cols.map(v => h('th', { scope: 'col', text: v })))));
+    const tb = h('tbody');
+    for (const r of rows) {
+      const label = state.row === 'finding' ? r + ': ' + (DATA.findings[r] || '') : r;
+      const tr = h('tr', null, h('th', { scope: 'row', title: label }, r, state.row === 'finding' ? h('span', { class: 'rowsub', text: DATA.findings[r] || '' }) : null));
+      for (const col of cols) {
+        const here = cells.filter(c => axisValue(c, state.row) === r && axisValue(c, state.col) === col);
+        tr.append(h('td', null, here.length ? h('div', { class: 'chips' }, here.map(chip)) : h('span', { class: 'muted', 'aria-label': 'no cells', text: '·' })));
+      }
+      tb.append(tr);
+    }
+    t.append(tb);
+  }
+
+  function renderCells(cells) {
+    const t = document.getElementById('cells');
+    t.replaceChildren();
+    document.getElementById('cells-count').textContent = '(' + cells.length + ' shown)';
+    t.append(h('thead', null, h('tr', null, ['Cell', 'Persistence', 'Resume', 'Key', 'Ids', 'Kill', 'Expected', 'Observed', 'Effects', 'Repro'].map(x => h('th', { scope: 'col', text: x })))));
+    const tb = h('tbody');
+    for (const c of cells) {
+      const k = c.config.kill + (c.config.crash !== 'sigkill' ? ' (' + c.config.crash + ')' : '') + (c.config.kill_tool !== 'charge_order' ? ' @' + c.config.kill_tool : '');
+      tb.append(h('tr', { 'aria-selected': state.selected === c.id ? 'true' : 'false' },
+        h('td', { class: 'id' }, h('button', { type: 'button', onclick: () => select(c.id), text: c.id })),
+        h('td', { class: 'mono', text: c.config.persistence }), h('td', { class: 'mono', text: c.config.resume }),
+        h('td', { class: 'mono', text: c.config.key }), h('td', { class: 'mono', text: c.config.ids }), h('td', { class: 'mono', text: k }),
+        h('td', { class: 'mono', text: c.expected || '-' }),
+        h('td', null, badge(c.verdict), c.expectation === 'differs' ? h('span', { class: 'differs', text: ' differs' }) : null),
+        h('td', { class: 'mono', text: effectsText(c) }), h('td', { text: c.reproducible ? 'yes' : 'NO' })));
+    }
+    t.append(tb);
+  }
+
+  function fmtEvent(e) {
+    const g = k => (e[k] === undefined || e[k] === null ? '' : e[k]);
+    switch (e.event) {
+      case 'kill': return (String(e.crash).toUpperCase()) + ' at ' + e.point + (e.tool ? ' (' + e.tool + ')' : '') + ': process dies here';
+      case 'tool_started': case 'tool_settled': return g('tool') + ' ' + g('tool_call_id');
+      case 'effect_committed': return g('tool') + ' ' + g('tool_call_id') + ' -> ' + g('effect_id') + (e.replayed ? ' (replayed by provider)' : ' (new)') + (e.idempotency_key ? '  key=' + e.idempotency_key : '  no key');
+      case 'model_invoked': return 'k=' + g('k') + ' sees returns ' + JSON.stringify(e.sees_returns || {});
+      case 'model_responded': return 'k=' + g('k') + ' emits ' + JSON.stringify(e.emits || []);
+      case 'node_finished': return g('node') + ' -> ' + g('next');
+      case 'history_saved': case 'history_saved_on_error': return g('n_messages') + ' msgs' + (e.folded_request ? ' (+node.request)' : '') + ', tail ' + JSON.stringify(e.tail || []);
+      case 'snapshot_saved': return g('run_id') + ' ' + g('state') + ' step=' + g('step_index') + ' n=' + g('n_messages');
+      case 'ledger_written': return g('run_id') + ' ' + g('tool_call_id') + ' ' + g('status');
+      case 'resume_planned': return g('mechanism') + ' from ' + g('history_source') + (e.fallback_restart ? ' -> FALLBACK restart' : '') + (e.deferred_calls && e.deferred_calls.length ? ' inject=' + e.deferred_calls.join(',') : '') + (e.deferred_approvals && e.deferred_approvals.length ? ' approve=' + e.deferred_approvals.join(',') : '');
+      case 'attempt_started': return g('action') + ' pid=' + g('pid');
+      case 'run_completed': return String(g('output')).slice(0, 160);
+      case 'run_failed': return g('error_type') + ': ' + String(g('error')).slice(0, 200);
+      default: { const o = Object.assign({}, e); for (const k of ['attempt', 'seq', 't_ms', 'event']) delete o[k]; return JSON.stringify(o); }
+    }
+  }
+  function evClass(e) {
+    if (e.event === 'kill') return 'kill';
+    if (e.event === 'effect_committed') return 'effect';
+    if (['history_saved', 'history_saved_on_error', 'snapshot_saved', 'ledger_written'].includes(e.event)) return 'persist';
+    return '';
+  }
+  function timeline(c) {
+    const out = [];
+    const atts = (c.attempts || []);
+    for (const a of [1, 2]) {
+      const evs = (c.timeline || []).filter(e => e.attempt === a);
+      if (!evs.length) continue;
+      const meta = atts.find(x => x.attempt === a) || {};
+      if (a === 2) out.push(h('div', { class: 'restart', text: 'New process. Resume mechanism: ' + c.config.resume + (c.resume && c.resume.fallback_restart ? ' (fell back to restart: ' + ((c.resume.notes || [])[0] || '') + ')' : '') }));
+      out.push(h('div', { class: 'lane-head' }, h('b', { text: 'Attempt ' + a + (a === 1 ? ' (first run)' : ' (resume)') }),
+        h('span', { class: 'muted mono', text: 'exit ' + (meta.returncode === null || meta.returncode === undefined ? '?' : meta.returncode) + (meta.returncode === -9 ? ' (SIGKILL)' : '') + ', ' + (meta.duration_s || '?') + ' s' })));
+      out.push(h('ol', { class: 'tl' }, evs.map(e => h('li', { class: evClass(e) },
+        h('span', { class: 'seq', text: '#' + e.seq }), h('span', { class: 't', text: (e.t_ms || 0).toFixed(1) + 'ms' }),
+        h('span', { class: 'ev', text: e.event }), h('span', { class: 'd', text: fmtEvent(e) })))));
+    }
+    return out;
+  }
+  function miniTable(headers, rows) {
+    return h('div', { class: 'pivot-wrap' }, h('table', { class: 'mini' }, h('thead', null, h('tr', null, headers.map(x => h('th', { scope: 'col', text: x })))),
+      h('tbody', null, rows.map(r => h('tr', null, r.map(x => h('td', { text: x === null || x === undefined ? '' : String(x) })))))));
+  }
+
+  function renderDetail() {
+    const box = document.getElementById('detail');
+    const c = CELLS.find(x => x.id === state.selected);
+    if (!c) { box.replaceChildren(h('div', { class: 'empty', text: 'Select a cell to see its execution timeline, provider effects, StepPersistence state and verdict.' })); return; }
+    const kids = [];
+    kids.push(h('h2', { class: 'mono', style: 'font-size:.95rem', text: c.id }));
+    kids.push(h('p', { style: 'margin:0 0 8px' }, h('span', { class: 'muted', text: (c.finding_title || c.finding) + '. ' }), c.claim || ''));
+    kids.push(h('p', { style: 'margin:6px 0' }, badge(c.verdict), ' ', h('span', { class: 'soft', text: effectsText(c) }), c.expected ? h('span', { class: c.expectation === 'differs' ? 'differs' : 'muted', text: '  expected ' + c.expected + (c.expectation === 'differs' ? ' (DIFFERS)' : '') }) : null,
+      h('span', { class: 'muted', text: '  ' + (c.reproducible ? 'reproducible across ' + (c.repeats || []).length + ' run(s)' : 'NOT reproducible') })));
+    kids.push(h('div', { class: 'explain', text: c.explanation }));
+    kids.push(h('h3', { text: 'Responsibility' }));
+    kids.push(h('ul', { class: 'resp' }, (c.responsibility || []).map(r => h('li', null, h('span', { class: 'cat', text: r.category.replace(/_/g, ' ') }), h('span', { text: r.factor })))));
+    kids.push(h('h3', { text: 'Configuration' }));
+    kids.push(h('dl', { class: 'kv' }, Object.entries(c.config).flatMap(([k, v]) => [h('dt', { text: k }), h('dd', { text: v })])));
+    if (c.not_applicable_reason) kids.push(h('p', { class: 'soft', text: 'Not applicable: ' + c.not_applicable_reason }));
+    if (c.lab_error) kids.push(h('p', { class: 'differs', text: 'Lab error: ' + c.lab_error }));
+    if ((c.timeline || []).length) { kids.push(h('h3', { text: 'Execution timeline' })); kids.push(...timeline(c)); }
+    const prov = c.provider || {};
+    if ((prov.charges || []).length || (prov.notifications || []).length) {
+      kids.push(h('h3', { text: 'FakePay effects (ground truth)' }));
+      kids.push(miniTable(['id', 'order', 'idempotency key', 'call_ref', 'attempt'], [...(prov.charges || []), ...(prov.notifications || [])].map(r => [r.id, r.order_id, r.idempotency_key, r.call_ref, r.attempt])));
+    }
+    const st = c.step_store;
+    if (st) {
+      kids.push(h('h3', { text: 'StepPersistence ledger' }));
+      kids.push(st.tool_effects.length ? miniTable(['run', 'tool_call_id', 'tool', 'status'], st.tool_effects.map(r => [r.run_id, r.tool_call_id, r.tool_name, r.status])) : h('p', { class: 'muted', text: 'empty' }));
+      kids.push(h('h3', { text: 'StepPersistence snapshots' }));
+      kids.push(st.snapshots.length ? miniTable(['run', 'step', 'state', 'msgs', 'tail'], st.snapshots.map(s => [s.run_id, s.step_index, s.state, s.n_messages, (s.tail || []).join('  ')])) : h('p', { class: 'muted', text: 'none' }));
+    }
+    if ((c.checks || []).length) {
+      kids.push(h('h3', { text: 'Consistency checks' }));
+      kids.push(h('ul', { class: 'resp' }, c.checks.map(k => h('li', null, h('span', { class: 'cat chk-' + k.status, text: k.status.toUpperCase() + ' ' + k.name }), h('span', { text: k.detail })))));
+    }
+    if (c.resume) {
+      kids.push(h('details', null, h('summary', { text: 'Resume plan (as recorded)' }), h('pre', { text: JSON.stringify(c.resume, null, 1) })));
+    }
+    kids.push(h('details', null, h('summary', { text: 'Repeats and fingerprints' }), h('pre', { text: JSON.stringify(c.repeats, null, 1) })));
+    if (c.history_file) kids.push(h('details', null, h('summary', { text: 'Final history file' }), h('pre', { text: JSON.stringify(c.history_file, null, 1) })));
+    box.replaceChildren(...kids);
+  }
+
+  function select(id) {
+    state.selected = id;
+    if (history.replaceState) history.replaceState(null, '', '#cell=' + encodeURIComponent(id));
+    renderAll();
+    const d = document.getElementById('detail');
+    d.scrollTop = 0;
+    if (window.matchMedia('(max-width: 1100px)').matches) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function renderAll() { const cells = filtered(); renderPivot(cells); renderCells(cells); renderDetail(); }
+
+  renderStats();
+  renderControls();
+  const m = /#cell=([^&]+)/.exec(location.hash);
+  if (m) state.selected = decodeURIComponent(m[1]);
+  else { const head = CELLS.find(c => c.id.startsWith('H2')); if (head) state.selected = head.id; }
+  renderAll();
+})();
+</script>
+</body>
+</html>

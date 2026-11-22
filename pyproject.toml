@@ -1,0 +1,85 @@
+[project]
+name = "agent-crash-lab"
+version = "0.1.0"
+description = "A reproducible SIGKILL crash matrix for side-effecting Pydantic AI tools: persistence pattern x resume mechanism x effect-key strategy."
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Melek Moalla" }]
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "pydantic-ai-slim==2.71.0",
+    "pydantic-ai-harness==0.71.0",
+]
+
+[project.scripts]
+crashlab = "crashlab.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-timeout>=2.3",
+    "coverage[toml]>=7.6",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crashlab"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/crashlab", "tests", "docs", "LICENSE", "pyproject.toml", "uv.lock"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PL", "PT"]
+ignore = [
+    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004",  # complexity limits: explicit branching is the point here
+    "E501",  # line length is enforced by `ruff format`; long literals are left intact
+    "PLC0415",  # lazy imports keep `crashlab list` fast and the child import order explicit
+    "RUF001", "RUF002", "RUF003",  # unicode ellipsis in human-readable text
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/crashlab/child.py" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+files = ["src/crashlab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 180
+markers = [
+    "subprocess: spawns child processes and SIGKILLs them (slower; real process boundary)",
+]
+addopts = "-ra"
+
+[tool.coverage.run]
+source = ["crashlab"]
+branch = true
+parallel = true
+concurrency = ["thread"]
+patch = ["subprocess"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
