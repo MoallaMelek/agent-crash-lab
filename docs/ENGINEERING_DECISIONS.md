@@ -30,7 +30,7 @@ resume path and *which* key an application uses:
    - `StepPersistence`'s default `continue_run`, which reads `complete` snapshots only, after a
      kill in the first tool cycle;
    - a restart, when no snapshot exists.
-3. A key built on `ctx.run_id` breaks on *every* resume, because the run id is new and core
+3. A key built on `ctx.run_id` breaks on *every* resume that re-executes the call, because the run id is new and core
    refuses to reuse it (#11951 is the same class of bug, inside the harness Shell).
 4. After a synthesized `interrupted` return, a model may re-issue the call under a new id. No
    framework layer can see that.
@@ -69,7 +69,8 @@ agent run that reaches its final output. Each cell is classified:
 
 - `OK`: one charge, run completed.
 - `DUPLICATE`: more than one charge.
-- `MISSING`: zero charges, but the run reports success.
+- `MISSING`: zero charges, but the run completed (it reached a final output; in the curated cell that
+  output says the status is unknown).
 - `STRANDED`: the run could not complete; the recovery path raised or gave up.
 - `AMBIGUOUS_RESOLVED`: one charge, but the agent's transcript disagrees with the provider.
   For example, the call was closed as `interrupted` while the charge exists.
@@ -86,7 +87,7 @@ says `started` while the provider has the charge.
 - **SIGKILL is not power loss.** The OS page cache survives a SIGKILL, so these results say
   nothing about `fsync` or torn writes after a power failure. The docs say so.
 - **Deterministic.** `FunctionModel` scripts have no network and no LLM. "Fresh" ids are
-  deterministic per model invocation (`call-<attempt>-<n>`), so they differ across processes
+  deterministic per model invocation (`call-a<attempt>-n<invocation>-<part>`), so they differ across processes
   but are reproducible. Each cell runs several times, and its outcome must be identical every time.
 - **POSIX only** (Linux, macOS), because the lab relies on `SIGKILL`. Windows is out of scope.
 - **Pinned** `pydantic-ai-slim==2.71.0`, `pydantic-ai-harness==0.71.0`, with `uv.lock`.

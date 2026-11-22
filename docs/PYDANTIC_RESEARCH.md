@@ -295,7 +295,7 @@ Signatures and APIs, verified by import in 2.71.0:
 
 ## 8. GitHub survey
 
-I searched issues and PRs through the REST `search/issues` API. Raw output is in `experiments/gh_search_raw.txt` and `gh_issue_bodies_*.txt`. I read comment threads with WebFetch; the `repos/.../issues` API was not enabled for this session. I only report what appears there.
+I searched issues and PRs through the REST `search/issues` API. Raw output is in `research-experiments/gh_search_raw.txt` and `gh_issue_bodies_*.txt`. I read comment threads with WebFetch; the `repos/.../issues` API was not enabled for this session. I only report what appears there.
 
 **Directly on point:**
 
@@ -426,8 +426,8 @@ A lab whose headline is "naive retry duplicates, idempotency keys fix it" would 
 ## 12. Open questions and unverified points
 
 - I did **not** run the durable-engine claims in a real Temporal, DBOS or Prefect server. The DBOS "function tool re-runs" claim is from its docs and a test comment.
-- I did not test a kill in the middle of a *parallel* batch. The docs say it can leave a completed effect with no persisted result.
-- I did not measure the window between the `completed` ledger write and the snapshot.
+- I did not test a kill in the middle of a *parallel* batch. The docs say it can leave a completed effect with no persisted result. (Measured later by the lab: `mid_parallel_batch` cells.)
+- I did not measure the window between the `completed` ledger write and the snapshot. (Measured later by the lab: `after_tool_node` and `during_snapshot_write` cells.)
 - #10926's thread: the API counts 11 comments and WebFetch saw 4. A hidden maintainer reply cannot be ruled out.
 - `RetryPromptPart` handling on resume was not exercised.
 - Whether real provider tool-call ids are ever reused deterministically was not tested. exp4b assumes fresh ids.
