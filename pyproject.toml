@@ -2,6 +2,7 @@
 name = "agent-crash-lab"
 version = "0.1.0"
 description = "A reproducible SIGKILL crash matrix for side-effecting Pydantic AI tools: persistence pattern x resume mechanism x effect-key strategy."
+readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Melek Moalla" }]
