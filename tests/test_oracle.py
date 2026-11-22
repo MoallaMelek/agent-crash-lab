@@ -155,6 +155,52 @@ def test_restart_with_same_stable_id_is_not_called_a_reexecution() -> None:
     assert any('only because ids=stable' in x for x in factors)
 
 
+def test_reasked_model_with_same_stable_id_is_not_called_a_reexecution() -> None:
+    # continue_default can return a prompt-only snapshot: no fallback restart, but the model is asked again.
+    f = facts(
+        cell=CellConfig(
+            persistence='step_frontier', resume='continue_default', kill='after_effect', key='tool_call_id'
+        ),
+        resume={'mechanism': 'continue_default', 'history_source': 'continue_run', 'fallback_restart': False},
+        effects={'charge_order': [charge(1, 1, key='call-charge-1')]},
+        timeline=[
+            effect_event(1, 'ch_0001', key='call-charge-1'),
+            KILL,
+            {'attempt': 2, 'event': 'model_responded', 'k': 1, 'emits': [['charge_order', 'call-charge-1']]},
+            effect_event(2, 'ch_0001', replayed=True, key='call-charge-1'),
+        ],
+        final_returns=[ret('charged ch_0001 (replayed by provider)')],
+    )
+    c = classify(f)
+    assert c.verdict == 'OK'
+    factors = [r['factor'] for r in c.responsibility]
+    assert not any('executes them' in x for x in factors)
+    assert any('only because ids=stable' in x for x in factors)
+
+
+def test_injected_reconcile_result_is_not_called_an_answered_call() -> None:
+    f = facts(
+        resume={
+            'mechanism': 'reconcile',
+            'history_source': 'history.json',
+            'lookups': [
+                {
+                    'tool_call_id': 'call-charge-1',
+                    'lookup': 'call_ref',
+                    'found_effect_id': 'ch_0001',
+                    'action': 'inject_result',
+                }
+            ],
+        },
+        effects={'charge_order': [charge(1, 1)]},
+        timeline=[effect_event(1, 'ch_0001'), KILL],
+        final_returns=[ret('charged ch_0001 (reconciled from provider)')],
+    )
+    factors = [r['factor'] for r in classify(f).responsibility]
+    assert not any('already answered' in x for x in factors)
+    assert any('DeferredToolResults' in x for x in factors)
+
+
 def test_ledger_checks_use_attempt_one_state_only() -> None:
     f = facts(
         cell=CellConfig(persistence='step_frontier', resume='continue_interrupted', kill='after_effect'),

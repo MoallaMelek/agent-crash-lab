@@ -355,9 +355,19 @@ def build_responsibility(facts: CellFacts, verdict: str) -> list[dict[str, str]]
     a1_ids = {(e['tool'], e['tool_call_id']) for e in a1}
     r = facts.resume or {}
     restarted = r.get('mechanism') == 'restart' or bool(r.get('fallback_restart'))
+    # Calls that attempt 2's model emitted in a new ModelResponse (as opposed to calls carried by the
+    # persisted history). A resumed history that ends before the call (for example a prompt-only
+    # snapshot) also re-asks the model, without being a restart.
+    a2_emitted = {
+        (p[0], p[1])
+        for m in _events(facts, 'model_responded', 2)
+        for p in (m.get('emits') or [])
+        if isinstance(p, list | tuple) and len(p) == 2 and p[0] != 'text'
+    }
     for e in a2:
-        # After a restart the model is asked again even if it happens to emit the same (stable) id.
-        same_call = (e['tool'], e['tool_call_id']) in a1_ids and not restarted
+        # When the model was asked again, a repeated (stable) id is a new call, not a re-execution.
+        reasked = restarted or (e['tool'], e['tool_call_id']) in a2_emitted
+        same_call = (e['tool'], e['tool_call_id']) in a1_ids and not reasked
         if same_call:
             add('framework_documented', DOC_RESUME_EXECUTES)
         elif any(x['tool'] == e['tool'] for x in a1):
@@ -440,7 +450,8 @@ def build_responsibility(facts: CellFacts, verdict: str) -> list[dict[str, str]]
         add('framework_documented', DOC_INTERRUPTED)
     if verdict == 'MISSING' and cell.after_interrupted == 'trust':
         add('scripted_model_behaviour', 'The scripted model trusted the interrupted return and did not retry.')
-    if not a2 and facts.resume is not None and verdict == 'OK':
+    injected = any(lk['action'] == 'inject_result' for lk in lookups)
+    if not a2 and facts.resume is not None and verdict == 'OK' and not injected:
         add('framework_documented', DOC_ANSWERED_NOT_RERUN)
     if verdict == 'OK' and not cell.expects_crash:
         add('framework_documented', 'Baseline: one run, one effect.')

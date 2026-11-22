@@ -8,7 +8,7 @@ Findings (section 1 of ENGINEERING_DECISIONS.md):
 
 * `F1`: saving `all_messages()` per `iter` node leaves a window as long as the next model request.
 * `F2`: a `tool_call_id` key only works on resume paths that keep the persisted `ModelResponse`.
-* `F3`: a key built on `ctx.run_id` breaks on every resume.
+* `F3`: a key built on `ctx.run_id` breaks on every resume that re-executes the call.
 * `F4`: after a synthesized `interrupted` return, a model may re-issue the call under a new id.
 * `F5`: `DeferredToolResults(calls=...)` resolves a never-deferred dangling call (reconciliation hook).
 
@@ -43,7 +43,7 @@ FINDINGS = {
     'B': 'Baselines without a crash',
     'F1': 'Per-node all_messages() persistence loses tool returns during the next model request',
     'F2': 'tool_call_id keys break on resume paths that re-ask the model',
-    'F3': 'run_id-based keys break on every resume',
+    'F3': 'run_id-based keys break on every resume that re-executes the call',
     'F4': 'A model may re-issue a call after a synthesized interrupted return',
     'F5': 'DeferredToolResults(calls=...) works as a reconciliation hook for never-deferred calls',
     'R': 'Restart without persisted state',
@@ -102,7 +102,8 @@ CURATED: tuple[CuratedCell, ...] = (
         'H4-reconcile-dedupes',
         'H',
         'OK',
-        'The same crash with reconciliation against the provider gives one charge without any key.',
+        'The same crash with reconciliation against the provider gives one charge without an idempotency key '
+        '(the lookup uses the tool_call_id the tool stored as provider metadata).',
         persistence='iter_naive',
         kill='after_effect',
         resume='reconcile',
@@ -685,7 +686,7 @@ CURATED: tuple[CuratedCell, ...] = (
         'F5-step-default-reconcile-degraded-business',
         'F5',
         'OK',
-        'The degraded restart is safe only with a business key.',
+        'The degraded restart gives one charge only with a business key.',
         persistence='step',
         kill='after_effect',
         resume='reconcile',
@@ -714,7 +715,7 @@ CURATED: tuple[CuratedCell, ...] = (
         'F5-notify-history-after-notify',
         'F5',
         'DUPLICATE',
-        'Two-step task killed after the notification: the settled charge is safe, the notification repeats.',
+        'Two-step task killed after the notification: the settled charge is not repeated, the notification is.',
         scenario='charge_then_notify',
         persistence='iter_naive',
         kill='after_effect',
@@ -807,7 +808,7 @@ CURATED: tuple[CuratedCell, ...] = (
         'R-iter-naive-restart-before-effect',
         'R',
         'OK',
-        'Restarting is safe when the crash came before the effect.',
+        'Restarting gives one charge when the crash came before the effect.',
         persistence='iter_naive',
         kill='before_effect',
         resume='restart',

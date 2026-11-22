@@ -7,7 +7,7 @@ stable*, because the provider can only dedupe a retry whose key equals the origi
 | strategy | key | stable when | breaks when |
 |---|---|---|---|
 | `none` | no key | never deduped | any re-execution duplicates |
-| `run_id+tool_call_id` | `ctx.run_id:ctx.tool_call_id` | never across runs | every resume: core assigns a new `run_id` and refuses to reuse one already in `message_history` (exp6, #11951) |
+| `run_id+tool_call_id` | `ctx.run_id:ctx.tool_call_id` | never across runs | every resume that re-executes the call: core assigns a new `run_id` and refuses to reuse one already in `message_history` (exp6, #11951) |
 | `tool_call_id` | `ctx.tool_call_id` | resume keeps the persisted `ModelResponse` | the resume path asks the model again (restart, StepPersistence complete-only snapshot before the first settled cycle) and the provider mints a new id; also collides across runs if a provider reuses deterministic ids |
 | `response_origin` | `ModelResponse.run_id:ModelResponse.timestamp:tool_name:tool_call_id` of the response that carries the call (the #11960 approach) | resume keeps the persisted `ModelResponse` | the model is asked again: a new response has a new timestamp (and usually a new id), even when ids are stable |
 | `business` | `order:<order_id>:<effect>` from the arguments | always, for this task | two *intended* identical effects on the same order would be merged; the key encodes a business rule (one charge per order) the application must own |
